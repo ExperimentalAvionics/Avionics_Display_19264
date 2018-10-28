@@ -6,3 +6,5 @@ The unit diplays both EFIS and EMS information.
 
 Details are here: http://experimentalavionics.com/efis-display-unit/
  
+Unzip libraries.zip to the "libraries" folder in your Arduino environment.
+

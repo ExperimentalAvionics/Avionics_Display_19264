@@ -82,4 +82,3 @@ if (BarLength > BarFull) {
      GLCD.DrawLine(67, 43, 67, 46); // Green Pressure Max   
  
 }
-

@@ -2,7 +2,11 @@ void FlightTime() {
   String s_UTC = "";
   byte second, minute, hour, dayOfWeek, dayOfMonth, month, year;
   // retrieve data from DS3231
-  readDS3231time(&second, &minute, &hour, &dayOfWeek, &dayOfMonth, &month, &year);
+//  readDS3231time(&second, &minute, &hour, &dayOfWeek, &dayOfMonth, &month, &year);
+  DateTime now = RTC.now();
+  hour = now.hour();
+  minute = now.minute();
+  second = now.second();
 
   textAreaUTCTime.ClearArea();
 
@@ -72,6 +76,7 @@ String Time_Millis2String(unsigned long LongTime) {
   return s_Time;
 }
 
+/*
 void readDS3231time(byte *second,
 byte *minute,
 byte *hour,
@@ -93,7 +98,7 @@ byte *year)
   *month = bcdToDec(Wire.read());
   *year = bcdToDec(Wire.read());
 }
-
+*/
 byte bcdToDec(byte val)
 {
   return( (val/16*10) + (val%16) );
@@ -103,7 +108,7 @@ byte decToBcd(byte val)
 {
   return( (val/10*16) + (val%10) );
 }
-
+/*
 void setDS3231time(byte second, byte minute, byte hour, byte dayOfWeek, byte
 dayOfMonth, byte month, byte year)
 {
@@ -119,3 +124,4 @@ dayOfMonth, byte month, byte year)
   Wire.write(decToBcd(year)); // set year (0 to 99)
   Wire.endTransmission();
 }
+*/

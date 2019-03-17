@@ -20,4 +20,3 @@ void Show_TT() {
   GLCD.print(outstr);
   
 }
-

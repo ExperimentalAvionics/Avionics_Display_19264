@@ -70,7 +70,16 @@ void EFIS_Menu() {
   }
 
   // sowing time constantly
-  readDS3231time(&second, &minute, &hour, &dayOfWeek, &dayOfMonth, &month, &year);
+//  readDS3231time(&second, &minute, &hour, &dayOfWeek, &dayOfMonth, &month, &year);
+
+  DateTime now = RTC.now();
+  year = now.year();
+  month = now.month();
+  dayOfMonth = now.day();
+  hour = now.hour();
+  minute = now.minute();
+  second = now.second();
+
   if (secvalue != second) {
     StringSetting1 = "Clock: 20";
     StringSetting1 += year;
@@ -303,7 +312,7 @@ void EFIS_Menu() {
     }
 
     // set time here
-    setDS3231time(00,minute,hour,7,dayOfMonth,month,year);
+    //setDS3231time(00,minute,hour,7,dayOfMonth,month,year);
     
     textAreaSetting1.SetFontColor(PIXEL_OFF);
     textAreaSetting1.ClearArea();

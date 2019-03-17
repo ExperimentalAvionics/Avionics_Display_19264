@@ -2,6 +2,11 @@ void EFIS_Main() {
 int encCurrentValue = 0;
 String Tracking_TorM = "";
 int TrackingNumber = 0;
+
+
+//  RedLightBlink(1);
+//  YellowLightBlink(1);
+  
   //************************************ Encoder *******************
   buttonState = digitalRead(Click_Button);
   
@@ -36,7 +41,7 @@ if (MenuItem == 2) {
 //======================== change Middle screen ==========================
 encCurrentValue = abs(myEnc.read()/4);
 
-if (MidScreen != encCurrentValue % 2) {
+if (MidScreen != encCurrentValue % 2 and MenuItem == 0) {
   MidScreen = encCurrentValue % 2; // two screens for now: 0: Artificial Horizon; 1: GPS data  
   GLCD.FillRect(66, 1, 61, 50, PIXEL_OFF); // clear the area around the Horizon   
   if(MidScreen == 1) {
@@ -52,7 +57,6 @@ if (MidScreen != encCurrentValue % 2) {
     textAreaGPSTRKvalue.print(Tracking); 
   }
 }
-
 
 
 // ========================= Main routine ======================================
@@ -164,4 +168,3 @@ switch (canId) {
 } 
       
 }
-

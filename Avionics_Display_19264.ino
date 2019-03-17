@@ -1,4 +1,4 @@
-/* Experimental Avionics Display module ver 2.0*/
+/* Experimental Avionics Display module ver 3.0*/
 /* This module combines EFIS and EMS functionality together */
 
 #include <Time.h>
@@ -7,6 +7,7 @@
 #include <openGLCD_Buildinfo.h>
 #include <openGLCD_Config.h>
 #include "Wire.h"
+#include "RTClib.h"
 #include <math.h>
 #include <Encoder.h>
 //#include <SPI.h>
@@ -21,9 +22,12 @@ unsigned char len = 0;
 unsigned char buf[8];
 unsigned char ext = 0;
 
-#define DS3231_I2C_ADDRESS 0x68   //clock
+//#define DS3231_I2C_ADDRESS 0x68   //clock
+RTC_DS1307 RTC;
 
-
+// Alarms
+unsigned long RedBlinkTimer = 0;
+unsigned long YellowBlinkTimer = 0;
 
 
 // EMS related variables
@@ -124,7 +128,7 @@ int xp60_old = 68, yp60_old = 3;
 int xp30_old = 68, yp30_old = 3;
 
 //*********** encoder *****************
-Encoder myEnc(19, 18);
+Encoder myEnc(18, 19);
 const int Click_Button = 3;
 unsigned long bTimer = 0;
 int buttonState = 0, MenuItem = 0, encLastValue = 0;
@@ -154,14 +158,24 @@ gText textAreaRPM;
 
 void setup() {
   Wire.begin();
-
   Serial.begin(115200);
+  RTC.begin();
+
+  if (! RTC.isrunning()) {
+    Serial.println("RTC is NOT running!");
+    // This will reflect the time that your sketch was compiled
+    RTC.adjust(DateTime(__DATE__, __TIME__));
+  }
 
   // EFIS or EMS?????
-  pinMode(45, INPUT_PULLUP);          // pull up digital pin 45
-  if (digitalRead(45) == LOW) {
+  pinMode(44, INPUT_PULLUP);          // pull up digital pin 44
+  if (digitalRead(44) == LOW) {
     DisplayScreen  = 2;
   }
+
+  //Alam LEDs
+  pinMode(42, OUTPUT);
+  pinMode(43, OUTPUT);
 
 
     //while (CAN_OK != CAN.begin(MCP_ANY, CAN_1000KBPS, MCP_8MHZ))              // init can bus : baudrate = 500k
@@ -169,16 +183,19 @@ void setup() {
     {
         Serial.println("CAN BUS Shield init fail");
         Serial.println("Init CAN BUS Shield again");
-        delay(100);
+        delay(500);
     }
     CAN.setMode(MCP_NORMAL);
     Serial.println("CAN BUS Shield init ok!");
+
 
 // there are 2 mask in mcp2515, you need to set both of them
 //    CAN.init_Mask(0,0,0x410);
 //    CAN.init_Mask(1,0,0x410); // 100 0001 0000
 //    CAN.init_Filt(0,0,0x3FF); // 011 1111 1111
     
+  RedLightBlink(1);
+  YellowLightBlink(1);
 
   GLCD.Init();
    
@@ -193,22 +210,24 @@ void setup() {
     delay(2000);
     GLCD.ClearScreen();
 
-  // DisplayScreen = 1;  
+  RedLightBlink(0);
+  YellowLightBlink(0);
 
+  // DisplayScreen = 1;  
     Init_Screen();
 
 }
 
 void loop() {
 
-  if (digitalRead(45) == LOW and DisplayScreen == 1) {
+  if (digitalRead(44) == LOW and DisplayScreen == 1) {
     DisplayScreen  = 2;
     Init_Screen();
     Serial.print("DisplayScreen: ");
     Serial.println(DisplayScreen);
   }
 
-  if (digitalRead(45) == HIGH and DisplayScreen == 2) {
+  if (digitalRead(44) == HIGH and DisplayScreen == 2) {
     DisplayScreen  = 1;
     Init_Screen();
     Serial.print("DisplayScreen: ");

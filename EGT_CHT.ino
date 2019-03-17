@@ -251,4 +251,3 @@ GLCD.SelectFont(System5x7);
   GLCD.print(tmp_Temp); 
 
 }  
-

@@ -13,4 +13,3 @@ void Show_VoltAmp() {
   GLCD.CursorToXY(64, 11);
   GLCD.print(buffer);
 }
-

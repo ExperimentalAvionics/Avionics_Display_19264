@@ -11,7 +11,8 @@ void EFIS_Menu() {
  int textShiftX = 4;
  int textShiftY = 10;
  int MaxSettings = 4;  // number of setting items 
- byte second, minute, hour, dayOfWeek, dayOfMonth, month, year;
+ byte second, minute, hour, dayOfWeek, dayOfMonth, month;
+ int year;
  int secvalue = 0;
  int TimeSetPosition = 0;
 
@@ -69,8 +70,7 @@ void EFIS_Menu() {
        delay(50);
   }
 
-  // sowing time constantly
-//  readDS3231time(&second, &minute, &hour, &dayOfWeek, &dayOfMonth, &month, &year);
+  // sowing time continuously
 
   DateTime now = RTC.now();
   year = now.year();
@@ -81,7 +81,7 @@ void EFIS_Menu() {
   second = now.second();
 
   if (secvalue != second) {
-    StringSetting1 = "Clock: 20";
+    StringSetting1 = "Clock: ";
     StringSetting1 += year;
     StringSetting1 += "-";
     if (month < 10) {
@@ -118,8 +118,6 @@ void EFIS_Menu() {
     textAreaSetting1.ClearArea();
     textAreaSetting1.print(StringSetting1);
     secvalue = second;
-
-
    
   }  
 
@@ -200,7 +198,7 @@ void EFIS_Menu() {
 
   } 
 
-//******************************** Setting UTC time *************************
+//******************************** Setting UTC/LOC time *************************
   if (SettingItem == 1 and ButtonPush == 1) {
     textAreaSetting1.ClearArea();
     textAreaSetting1.SetFontColor(PIXEL_ON);
@@ -211,7 +209,7 @@ void EFIS_Menu() {
   
       if (encCurrentValue != encLastValue) {
         GLCD.InvertRect(58+(TimeSetPosition*18), highlighthight+1, 12, highlighthight-2);
-        TimeSetPosition = (TimeSetPosition - (encCurrentValue - encLastValue)) % 5;
+        TimeSetPosition = (TimeSetPosition + (encCurrentValue - encLastValue)) % 5;
         // due to weird implementation of MODULO function I had to do the follwoing line
        if (TimeSetPosition <0) {
           TimeSetPosition = 5 + TimeSetPosition;
@@ -226,16 +224,16 @@ void EFIS_Menu() {
         bTimer = millis();
         while (buttonState == LOW and millis() - bTimer < 1500) { // button released
            buttonState = digitalRead(Click_Button);
-          delay(50);
+          delay(70);
         }
-        if (millis() - bTimer > 1500) { 
+        if (buttonState == LOW and millis() - bTimer > 1500) { 
           KeepLoop1 = false;
         } else {
 
           switch (TimeSetPosition) {
              case 0:
-               tmpValue = year;
-               tmpMinValue = 15;
+               tmpValue = year - 2000;
+               tmpMinValue = 19;
                tmpMaxValue = 99;
                break;
              case 1:
@@ -261,10 +259,11 @@ void EFIS_Menu() {
           }
           
           GLCD.InvertRect(57+(TimeSetPosition*18), highlighthight-2, 14, highlighthight+3);
+          encLastValue = myEnc.read()/4;
           while (KeepLoop2) {
             encCurrentValue = myEnc.read()/4;
             if (encCurrentValue != encLastValue) {
-              tmpValue = tmpValue - (encCurrentValue - encLastValue);
+              tmpValue = tmpValue + (encCurrentValue - encLastValue);
               if (tmpValue > tmpMaxValue) {
                 tmpValue = tmpMaxValue;
               }
@@ -289,7 +288,7 @@ void EFIS_Menu() {
              // write the new value back into the correcponding valiable        
             switch (TimeSetPosition) {
                          case 0:
-                           year = tmpValue;
+                           year = tmpValue + 2000;
                            break;
                          case 1:
                            month = tmpValue;
@@ -312,7 +311,7 @@ void EFIS_Menu() {
     }
 
     // set time here
-    //setDS3231time(00,minute,hour,7,dayOfMonth,month,year);
+    RTC.adjust(DateTime(year, month, dayOfMonth, hour, minute, 0));
     
     textAreaSetting1.SetFontColor(PIXEL_OFF);
     textAreaSetting1.ClearArea();

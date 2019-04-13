@@ -163,9 +163,11 @@ void setup() {
 
   if (! RTC.isrunning()) {
     Serial.println("RTC is NOT running!");
-    // This will reflect the time that your sketch was compiled
-    RTC.adjust(DateTime(__DATE__, __TIME__));
   }
+
+  // Adjust the clock to the current time from PC (at compilation)
+  // RTC.adjust(DateTime(__DATE__, __TIME__));
+
 
   // EFIS or EMS?????
   pinMode(44, INPUT_PULLUP);          // pull up digital pin 44
@@ -206,7 +208,7 @@ void setup() {
     GLCD.CursorTo(9, 4);
     GLCD.print("Display System");
     GLCD.CursorTo(14, 6);
-    GLCD.print("2018");
+    GLCD.print("2019");
     delay(2000);
     GLCD.ClearScreen();
 

@@ -35,20 +35,20 @@ void EFIS_Menu() {
 
   //****************************** Draw the screen ********************************
   i = 0;
-  textAreaSetting0.DefineArea(textShiftX, 1 + textShiftY * i , 29, 1 , System5x7);
+  textAreaSetting0.DefineArea(textShiftX, 1 + textShiftY * i , 31, 1 , System5x7);
   textAreaSetting0.ClearArea();
    textAreaSetting0.print("Exit");  
   GLCD.InvertRect(0, highlighthight * i, highlightwidth, highlighthight);
 
   i = 1;
-  textAreaSetting1.DefineArea(textShiftX, 1 + textShiftY * i , 29, 1 , System5x7);
+  textAreaSetting1.DefineArea(textShiftX, 1 + textShiftY * i , 31, 1 , System5x7);
   textAreaSetting1.ClearArea();
   //textAreaSetting1.SetFontColor(PIXEL_OFF);
   StringSetting1 = "Clock: ";
   textAreaSetting1.print(StringSetting1);  
 
   i = 2;
-  textAreaSetting2.DefineArea(textShiftX, 1 + textShiftY * i , 29, 1 , System5x7);
+  textAreaSetting2.DefineArea(textShiftX, 1 + textShiftY * i , 31, 1 , System5x7);
   textAreaSetting2.ClearArea();
   StringSetting2 = "Airswitch Min Speed: " + String(MinFlightSpeed,DEC) + " Kts";
   textAreaSetting2.print(StringSetting2);  
@@ -80,8 +80,17 @@ void EFIS_Menu() {
   minute = now.minute();
   second = now.second();
 
+ 
+
   if (secvalue != second) {
     StringSetting1 = "Clock: ";
+    
+    if (TimeConfig == 1) { // Check is the rightmost bit in the DisplayConfig set to 1. Is so it is LOC time otherwise UTC
+      StringSetting1 += "LOC ";
+    } else {
+      StringSetting1 += "UTC ";
+    }
+    
     StringSetting1 += year;
     StringSetting1 += "-";
     if (month < 10) {
@@ -203,19 +212,31 @@ void EFIS_Menu() {
     textAreaSetting1.ClearArea();
     textAreaSetting1.SetFontColor(PIXEL_ON);
     textAreaSetting1.print(StringSetting1);
-    GLCD.InvertRect(58+(TimeSetPosition*18), highlighthight+1, 12, highlighthight-2);
+    if (TimeSetPosition == 0) {
+      GLCD.InvertRect(45+(TimeSetPosition*18), highlighthight+1, 20, highlighthight-2);
+    } else {
+      GLCD.InvertRect(64+(TimeSetPosition*18), highlighthight+1, 12, highlighthight-2);
+    }
     while (KeepLoop1) {
       encCurrentValue = myEnc.read()/4;
   
       if (encCurrentValue != encLastValue) {
-        GLCD.InvertRect(58+(TimeSetPosition*18), highlighthight+1, 12, highlighthight-2);
-        TimeSetPosition = (TimeSetPosition + (encCurrentValue - encLastValue)) % 5;
+        if (TimeSetPosition == 0) {
+          GLCD.InvertRect(45+(TimeSetPosition*18), highlighthight+1, 20, highlighthight-2);
+        } else {
+          GLCD.InvertRect(64+(TimeSetPosition*18), highlighthight+1, 12, highlighthight-2);
+        }
+        TimeSetPosition = (TimeSetPosition + (encCurrentValue - encLastValue)) % 6;
         // due to weird implementation of MODULO function I had to do the follwoing line
        if (TimeSetPosition <0) {
-          TimeSetPosition = 5 + TimeSetPosition;
+          TimeSetPosition = 6 + TimeSetPosition;
        }
         encLastValue = encCurrentValue;
-        GLCD.InvertRect(58+(TimeSetPosition*18), highlighthight+1, 12, highlighthight-2);
+        if (TimeSetPosition == 0) {
+          GLCD.InvertRect(45+(TimeSetPosition*18), highlighthight+1, 20, highlighthight-2);
+        } else {
+          GLCD.InvertRect(64+(TimeSetPosition*18), highlighthight+1, 12, highlighthight-2);
+        }
  
       }
       
@@ -232,33 +253,41 @@ void EFIS_Menu() {
 
           switch (TimeSetPosition) {
              case 0:
+               tmpValue = 0;
+               tmpMinValue = 0;
+               tmpMaxValue = 1;
+               break;
+             case 1:
                tmpValue = year - 2000;
                tmpMinValue = 19;
                tmpMaxValue = 99;
                break;
-             case 1:
+             case 2:
                tmpValue = month;
                tmpMinValue = 1;
                tmpMaxValue = 12;
                break;
-             case 2:
+             case 3:
                tmpValue = dayOfMonth;
                tmpMinValue = 1;
                tmpMaxValue = 31;
                break;
-             case 3:
+             case 4:
                tmpValue = hour;
                tmpMinValue = 0;
                tmpMaxValue = 23;
                break;
-             case 4:
+             case 5:
                tmpValue = minute;
                tmpMinValue = 0;
                tmpMaxValue = 59;
                break;
           }
-          
-          GLCD.InvertRect(57+(TimeSetPosition*18), highlighthight-2, 14, highlighthight+3);
+          if (TimeSetPosition == 0) {
+            GLCD.InvertRect(45+(TimeSetPosition*18), highlighthight-2, 20, highlighthight+3);
+          } else {
+            GLCD.InvertRect(63+(TimeSetPosition*18), highlighthight-2, 14, highlighthight+3);
+          }
           encLastValue = myEnc.read()/4;
           while (KeepLoop2) {
             encCurrentValue = myEnc.read()/4;
@@ -271,8 +300,17 @@ void EFIS_Menu() {
                 tmpValue = tmpMinValue;
               }
               encLastValue = encCurrentValue;
-              GLCD.CursorToXY(58+(TimeSetPosition*18), highlighthight+1);
-              GLCD.Printf("%02d", tmpValue);
+              if (TimeSetPosition == 0) {
+                GLCD.CursorToXY(46+(TimeSetPosition*18), highlighthight+1);
+                if (tmpValue == 0) {
+                  GLCD.Printf("UTC");
+                } else {
+                  GLCD.Printf("LOC");
+                }
+              } else {
+                GLCD.CursorToXY(64+(TimeSetPosition*18), highlighthight+1);
+                GLCD.Printf("%02d", tmpValue);
+              }
             }  
             buttonState = digitalRead(Click_Button);
             if (buttonState == LOW) { // buttom pressed
@@ -288,22 +326,29 @@ void EFIS_Menu() {
              // write the new value back into the correcponding valiable        
             switch (TimeSetPosition) {
                          case 0:
-                           year = tmpValue + 2000;
+                           TimeConfig = tmpValue;
                            break;
                          case 1:
-                           month = tmpValue;
+                           year = tmpValue + 2000;
                            break;
                          case 2:
-                           dayOfMonth = tmpValue;
+                           month = tmpValue;
                            break;
                          case 3:
-                           hour = tmpValue;
+                           dayOfMonth = tmpValue;
                            break;
                          case 4:
+                           hour = tmpValue;
+                           break;
+                         case 5:
                            minute = tmpValue;
                            break;
-                      }          
-            GLCD.InvertRect(57+(TimeSetPosition*18), highlighthight-2, 14, highlighthight+3);
+                      }
+            if (TimeSetPosition == 0) {
+              GLCD.InvertRect(45+(TimeSetPosition*18), highlighthight-2, 20, highlighthight+3);
+            } else {
+              GLCD.InvertRect(63+(TimeSetPosition*18), highlighthight-2, 14, highlighthight+3);
+            }
             KeepLoop2 = true;
           
         }
@@ -312,7 +357,9 @@ void EFIS_Menu() {
 
     // set time here
     RTC.adjust(DateTime(year, month, dayOfMonth, hour, minute, 0));
-    
+    Serial.print("TimeConfig = ");
+    Serial.println(TimeConfig);
+    EEPROM.put(TimeConfig_MemOffset, TimeConfig);
     textAreaSetting1.SetFontColor(PIXEL_OFF);
     textAreaSetting1.ClearArea();
     textAreaSetting1.print(StringSetting1);

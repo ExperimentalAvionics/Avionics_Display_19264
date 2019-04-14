@@ -136,8 +136,11 @@ int buttonState = 0, MenuItem = 0, encLastValue = 0;
 //**************** EEPROM *******************
 int QNH = 1013;
 int QNH_MemOffset = 0;
-int MinFlightSpeed = 20; //Airspeed that triggers flight timer
-int MinFlightSpeed_MemOffset = 2;
+int MinFlightSpeed = 20;          // Airspeed that triggers flight timer
+int MinFlightSpeed_MemOffset = 2; // two bytes (int) for storing min flight switch
+byte TimeConfig = 0;              // Time UTC or Local UTC = 0, Local = 1
+int TimeConfig_MemOffset = 4;     // 
+
 
 
 // Both EMS and EFIS related stuff

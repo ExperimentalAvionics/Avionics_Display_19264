@@ -37,7 +37,11 @@ void EFIS_Display() {
  //***************** Time *******************
  
   textAreaUTC.DefineArea(8, 24 , 3, 1 , newbasic3x5);
-  textAreaUTC.print("UTC");
+  if (TimeConfig == 1) {
+    textAreaUTC.print("LOC");
+  } else {
+    textAreaUTC.print("UTC");
+  }
   textAreaUTCTime.DefineArea(25, 24 , 8, 1 , newbasic3x5);
   textAreaFLT.DefineArea(8, 32 , 3, 1 , newbasic3x5);
   textAreaFLT.print("FLT");

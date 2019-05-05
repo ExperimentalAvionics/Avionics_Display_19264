@@ -77,13 +77,18 @@ switch (canId) {
 
     case 40:
       {
-      // Airspeed, AOA, ALT, Vert speed
+      // Airspeed, ALT, Vert speed
           Airspeed = (buf[1] << 8) | buf[0];
           Altitude  = (buf[4] << 16) | (buf[3] << 8) | buf[2];
           VertSpeed = (buf[6] << 8) | buf[5];
-          AOA = buf[7];
-          
           Show_AData();
+      }
+      break;
+    case 41:
+      {
+      //  AOA
+          AOA = (buf[1] << 8) | buf[0];
+          Show_AOA();
       }
       break;
     case 42:

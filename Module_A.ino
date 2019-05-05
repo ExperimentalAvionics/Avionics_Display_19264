@@ -22,6 +22,7 @@ if (Airspeed <10 ) {
   if (VertSpeed < 0) {
     textAreaVSIarrow.print("&"); // going DOWN
   }
+
   
 }
 
@@ -29,4 +30,18 @@ void Show_OAT() {
 
 // do something here
   
+}
+
+void Show_AOA() {
+byte val;
+// Send AoA information to the LED display via I2C (address = x09)
+// AOA is int, so we need to send two bytes
+ 
+  Wire.beginTransmission(9); // transmit to device x09
+  val = AOA >> 8;
+  Wire.write(val);           // sends AOA 
+  val = AOA;
+  Wire.write(val);           // sends AOA 
+  Wire.endTransmission();    // stop transmitting
+    
 }

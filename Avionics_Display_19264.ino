@@ -94,7 +94,7 @@ int MidScreen = 0;
 unsigned int  Airspeed = 0; //Airspeed
 unsigned int Altitude = 0;
 int VertSpeed = 0;
-unsigned int AOA = 0;
+int AOA = 0;
 
 int OAT = 0;
 int Humidity = 0;
@@ -254,6 +254,10 @@ switch (DisplayScreen) {
           EMS_Main();
           break;
   }
+
+// temporary
+// delay(200);
+// Show_AOA();
 
 
 }

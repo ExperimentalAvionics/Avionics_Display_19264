@@ -13,6 +13,9 @@
 //#include <SPI.h>
 #include "mcp_can.h"
 
+//EMS Sensor Board configuration - 4 or 6 cylinders engine
+const int CYL = 6;
+
 // CAN related stuff
 const int SPI_CS_PIN = 49;
 unsigned long canId;
@@ -211,7 +214,7 @@ void setup() {
     GLCD.CursorTo(9, 4);
     GLCD.print("Display System");
     GLCD.CursorTo(14, 6);
-    GLCD.print("2019");
+    GLCD.print("2020");
     delay(2000);
     GLCD.ClearScreen();
 
@@ -248,16 +251,11 @@ switch (DisplayScreen) {
             TimeRefresh = millis();
             FlightTime();
           }
-            
           break;
       case 2:   // EMS
           EMS_Main();
           break;
   }
-
-// temporary
-// delay(200);
-// Show_AOA();
 
 
 }

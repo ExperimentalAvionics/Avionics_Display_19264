@@ -1,4 +1,6 @@
 void EFIS_Menu() {
+// this routine has its own loop and nothing outside of it gets executed
+
  int SettingItem = 0;
  int ButtonPush = 0;
  int KeepLoop = true;
@@ -16,10 +18,18 @@ void EFIS_Menu() {
  int secvalue = 0;
  int TimeSetPosition = 0;
 
- int CalCurrValue = 0;
- String CalDataCurrentString =""; // current calibration data
- String CalDataNewString =""; // temporary storage for current (latest) calibration data
+// int CalCurrValue = 0;
+// String CalDataCurrentString =""; // current calibration data
+// String CalDataNewString =""; // temporary storage for current (latest) calibration data
  String CalFlag = "Y";
+
+ byte calSys = 0;
+ byte calGyro = 0;
+ byte calAccel = 0;
+ byte calMag = 0;
+ byte CalibrationStats_old = 255;  
+
+
 
  String StringSetting1 = "";
  String StringSetting2 = "";
@@ -56,7 +66,7 @@ void EFIS_Menu() {
   i = 3;
   textAreaSetting3.DefineArea(textShiftX, 1 + textShiftY * i , 31, 1 , System5x7);
   textAreaSetting3.ClearArea();
-  StringSetting3 = "Mag/Cal Q:0";
+  StringSetting3 = "AHRS Cal: 0";
   textAreaSetting3.print(StringSetting3);  
   
 
@@ -130,53 +140,42 @@ void EFIS_Menu() {
    
   }  
 
-  //******************************************************** Mag Calibration *****************
-  // show magnetometer calibration data continuously
-  // show Yes/No toggle
-  // if Yes selected - show new calibration data
-  // if No selected, show old calibration data from EEPROM (not the data before calibration. Calibration data changes all the time!!!!)
-  // If Yes selected and button pressed - write data into EEPROM
-  // If No selected and button pressed - do nothing, just exist. The calibration data in EEPROM stays intact.
-  // current calibration doesnt change regardsless of the settings
-  // this is to store calibration data just for startup.
-  // dont let calibration to be saved if quality is less than 3
+  //******************************************************** AHRS Calibration *****************
+  // show AHRS calibration status continuously
+  // show Save/Exit toggle
+  // upon entry into the mode - disable the calibration refresh on the AHRS unit to avoid messing up calibration efforts
+  //   refresh disabled by sending message id 35 with seccond bit set 1 (0x02)
+  // If Save selected and button pressed - send a command to save the data (Message ID 35, first bit set 1)
+  // If Exit selected and button pressed - just exit and send the command to re-enable the calibration refresh. The calibration data in EEPROM stays intact.
+
+  // since we are outside of the mail loop we need to read the calibration data coming from CAN network
+  if(CAN_MSGAVAIL == CAN.checkReceive())            // check if data coming
+    {
+        CAN.readMsgBuf(&canId, &ext, &len, buf);
+        if (canId == 73) {
+          CalibrationStats = buf[6];
+        }
+    }
   
-  CalibrationStats = 0; // bno.getCalib();
+  if (CalibrationStats_old != CalibrationStats) {
 
-//  bno.setMode(Adafruit_BNO055::OPERATION_MODE_CONFIG);
-//  delay(50);
+     calSys = (0xC0 & CalibrationStats) >> 6;
+     calGyro = (0x30 & CalibrationStats) >> 4;
+     calAccel = (0x0C & CalibrationStats) >> 2;
+     calMag = (0x03 & CalibrationStats) >> 0;  
 
-//  readBytes(BNO055_ADDRESS, Adafruit_BNO055::MAG_OFFSET_X_LSB_ADDR, 6, &data[0]);
-//  CalDataNewString = String(data[0], HEX) + ":" + String(data[1], HEX) + ":" + String(data[2], HEX) + ":" + String(data[3], HEX) + ":" + String(data[4], HEX) + ":" + String(data[5], HEX);
-  
-//  data[0] = bno.getCalvalMRL();                 // Read Magnetic calibration values
-//  data[1] = bno.getCalvalMRM();
-//  data[2] = bno.getCalvalMOXL();
-//  data[3] = bno.getCalvalMOXM();
-//  data[4] = bno.getCalvalMOYL();
-//  data[5] = bno.getCalvalMOYM();
-//  data[6] = bno.getCalvalMOZL();
-//  data[7] = bno.getCalvalMOZM();
+     StringSetting3 = "AHRS Cal: ";
+     StringSetting3 += "S:" + String(calSys) + " G:" + String(calGyro) + " A:" + String(calAccel) + " M:" + String(calMag);
 
-//  CalDataNewString = String(data[2], HEX) + ":" + String(data[3], HEX) + ":" + String(data[4], HEX) + ":" + String(data[5], HEX) + ":" + String(data[6], HEX) + ":" + String(data[7], HEX); // display calibration balues all except radius
-  
-//  bno.setMode(Adafruit_BNO055::OPERATION_MODE_NDOF);
-//  delay(50);
-
-  if ((CalibrationStats != (0x03 & CalibrationStats)) || (CalDataNewString != CalDataCurrentString)) {   // check if calibration quality value changed
-
-     CalCurrValue = (0x03 & CalibrationStats);
-     StringSetting3 = "Mag/Cal Q:";
-     StringSetting3 += CalCurrValue;
-
-     CalDataCurrentString = CalDataNewString;
-     StringSetting3 += "   ";
-     StringSetting3 += CalDataCurrentString;
-     
+    if (SettingItem == 3) {
+      textAreaSetting3.SetFontColor(PIXEL_OFF);
+    } else {
+      textAreaSetting3.SetFontColor(PIXEL_ON);
+    }
      textAreaSetting3.ClearArea();
      textAreaSetting3.print(StringSetting3);
+     CalibrationStats_old = CalibrationStats;
   }
-
 
   //**************************************** end of showing current calibration data
   
@@ -411,40 +410,66 @@ void EFIS_Menu() {
    //***********************  END of Airswitch Min Speed setting  ***********************
 
 
-//***********************  BNO Magnetometer calibration  ***********************
-/*
+//***********************  AHRS calibration  ***********************
+
   if (SettingItem == 3 and ButtonPush == 1) {
-    CalFlag = "Y";
-    StringSetting3 = "Mag/Cal Q:";
-    StringSetting3 += CalCurrValue;
-    StringSetting3 += " Y ";
-    StringSetting3 += CalDataCurrentString;
+    CalFlag = "N";
+    
+    Send_Calibration_Cammand(0x02);  
+
+    StringSetting3 = "AHRS Cal: ";
+    StringSetting3 += "S:" + String(calSys) + " G:" + String(calGyro) + " A:" + String(calAccel) + " M:" + String(calMag);
+    
+    StringSetting3 += " >Exit";
+
+    textAreaSetting3.SetFontColor(PIXEL_ON);
     textAreaSetting3.ClearArea();
     textAreaSetting3.print(StringSetting3);
     
     while (KeepLoop3) {
+       // since we are outside of the mail loop we need to read the calibration data coming from CAN network
+        if(CAN_MSGAVAIL == CAN.checkReceive())            // check if data coming
+        {
+            CAN.readMsgBuf(&canId, &ext, &len, buf);
+            if (canId == 73) {
+              CalibrationStats = buf[6];
+            }
+            calSys = (0xC0 & CalibrationStats) >> 6;
+            calGyro = (0x30 & CalibrationStats) >> 4;
+            calAccel = (0x0C & CalibrationStats) >> 2;
+            calMag = (0x03 & CalibrationStats) >> 0;  
+        }
+
+      
       encCurrentValue = myEnc.read()/4;
+
+      StringSetting3 = "AHRS Cal: ";
+      StringSetting3 += "S:" + String(calSys) + " G:" + String(calGyro) + " A:" + String(calAccel) + " M:" + String(calMag);
+
   
       if (encCurrentValue != encLastValue) { // there are only two possible values Y -save, N - ignore
         encLastValue = encCurrentValue;
 
-        StringSetting3 = "Mag/Cal Q:";
-        StringSetting3 += CalCurrValue;
+        if (CalFlag == "Y") {
+            CalFlag ="N";
+           } else {
+            CalFlag ="Y";
+          }
+        CalibrationStats_old = 255;
+      }
 
       if (CalFlag == "Y") {
-          CalFlag ="N";
-        StringSetting3 += " N ";
-        StringSetting3 += CalDataOldString;
-        } else {
-          CalFlag ="Y";
-        StringSetting3 += " Y ";
-        StringSetting3 += CalDataCurrentString;
-        }
-  
-        textAreaSetting3.ClearArea();
-        textAreaSetting3.print(StringSetting3);
-        
+        StringSetting3 += " >Save";
+      } else {
+        StringSetting3 += " >Exit";
       }
+
+      if (CalibrationStats_old != CalibrationStats) {
+         textAreaSetting3.ClearArea();
+         textAreaSetting3.print(StringSetting3);
+         CalibrationStats_old = CalibrationStats;
+      }
+
       buttonState = digitalRead(Click_Button);
       if (buttonState == LOW) { // buttom pressed
         while (buttonState == LOW) { // button released
@@ -456,22 +481,23 @@ void EFIS_Menu() {
       
     }
         if (CalFlag == "Y") {
-           for (z=0;z<8;z++) {
-             EEPROM.put(BNO_MemOffset + z, byte(data[z]));
-           }
+           Serial.println("###### sending command to save the data ######");
+           Send_Calibration_Cammand(0x01);  // save the current calibration data into AHRS's EEPROM and resume calibration updates/resets
+        } else {
+           Send_Calibration_Cammand(0x00); // just resume calibration updates/resets
         }
-        StringSetting3 = "Mag/Cal Q:";
-        StringSetting3 += CalCurrValue;
-        StringSetting3 += "   ";
-        StringSetting3 += CalDataCurrentString;
         
+        StringSetting3 = "AHRS Cal: ";
+        StringSetting3 += "S:" + String(calSys) + " G:" + String(calGyro) + " A:" + String(calAccel) + " M:" + String(calMag) + "      ";
+        
+        
+    textAreaSetting3.ClearArea();        
     textAreaSetting3.SetFontColor(PIXEL_OFF);
-    textAreaSetting3.ClearArea();
     textAreaSetting3.print(StringSetting3);
     ButtonPush = 0;
     KeepLoop3 = true;
   }
-*/
+
 //*************************** End of BNO calibration ********************************
 
 
@@ -485,21 +511,7 @@ void EFIS_Menu() {
  EFIS_Display();
 }
 
-/*
-void SetMinFlightSpeed() {
-int encCurrentValue = 0;
-
-encCurrentValue = myEnc.read()/4;
-
-if (encCurrentValue != encLastValue) {
-
-   MinFlightSpeed = MinFlightSpeed + (encCurrentValue - encLastValue);
-   encLastValue = encCurrentValue;
-
+void Send_Calibration_Cammand(byte CalCommand) {
+  buf[0] = CalCommand;
+  CAN.sendMsgBuf(35, 0, 1, buf); 
 }
-   
-
-  
-}
-
-*/

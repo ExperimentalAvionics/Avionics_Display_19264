@@ -34,7 +34,7 @@ unsigned int TempLy = 3; //offset Y for left Cyl temp
 unsigned int StepY = 9; // vertical Shift for each Cyl 
 unsigned int StepX = 64; // horizontal Shift for each Cyl 
 
-// this is "normal temperature tange
+// this is "normal" temperature tange
 unsigned int TempMin = 600; //30% of the bottom scale
 unsigned int TempMax = 750; //20% of the upper scale
 unsigned int AbsMax;
@@ -144,6 +144,11 @@ unsigned int TempLy = 36; //offset Y for left Cyl temp
 unsigned int StepY = 9; // vertical Shift for each Cyl 
 unsigned int StepX = 64; // horizontal Shift for each Cyl 
 
+if (CYL == 4) {
+  TempLy = 29;
+}
+
+
 // this is "normal temperature tange
 unsigned int TempMin = 90; //30% of the bottom scale
 unsigned int TempMax = 200; //20% of the upper scale
@@ -188,6 +193,10 @@ unsigned int TempLx = 90; //offset X for left Cyl temp
 unsigned int TempLy = 36; //offset Y for left Cyl temp
 unsigned int StepY = 9; // vertical Shift for each Cyl 
 unsigned int StepX = 64; // horizontal Shift for each Cyl 
+
+if (CYL == 4) {
+  TempLy = 29;
+}
 
 // this is "normal temperature tange
 unsigned int TempMin = 90; //30% of the bottom scale

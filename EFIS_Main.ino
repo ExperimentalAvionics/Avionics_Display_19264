@@ -4,9 +4,6 @@ String Tracking_TorM = "";
 int TrackingNumber = 0;
 
 
-//  RedLightBlink(1);
-//  YellowLightBlink(1);
-  
   //************************************ Encoder *******************
   buttonState = digitalRead(Click_Button);
   

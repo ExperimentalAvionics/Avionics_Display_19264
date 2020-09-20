@@ -1,5 +1,4 @@
 void Show_VoltAmp() {
-  float A_Max = 80;
 
   char buffer[5];
 
@@ -9,7 +8,7 @@ void Show_VoltAmp() {
   GLCD.CursorToXY(64, 1);
   GLCD.print(buffer);
   
-  dtostrf(((float)EL_Amps*A_Max/1024), 4, 1, buffer );
+  dtostrf(((float)EL_AltAmps/1000), 4, 1, buffer );
   GLCD.CursorToXY(64, 11);
   GLCD.print(buffer);
 }

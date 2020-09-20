@@ -1,4 +1,74 @@
 void EMS_Main() {
+int encCurrentValue = 0;
+
+
+  //************************************ EMS Encoder *******************
+  buttonState = digitalRead(Click_Button);
+  
+  if (buttonState == LOW and bTimer == 0 and MenuItem == 0) {
+    bTimer = millis();
+  }
+
+  if (buttonState == HIGH and bTimer > 0 and MenuItem == 0) {
+    bTimer = millis() - bTimer;
+    if (bTimer < 2000) {
+      encLastValue = myEnc.read()/4;
+      MenuItem = 1;
+    } 
+    bTimer = 0;
+  }
+
+  if (buttonState == LOW and millis() - bTimer > 2000 and MenuItem == 0) {
+    bTimer = 0;
+    MenuItem = 2;
+  }
+  
+
+if (MenuItem == 1) {
+   // Dont know yet
+}
+
+if (MenuItem == 2) {
+  EMS_Menu();
+}
+
+
+// === Right half of the display can be changed to show various engine parameters
+// === by default it is EGT/CHT screen
+// ======================== Change Roght Half of the screen ==========================
+
+encCurrentValue = abs(myEnc.read()/4);
+
+if (RightScreen != encCurrentValue % 2 and MenuItem == 0) {
+  RightScreen = encCurrentValue % 2; // two screens for now: 0: EGT+CHT; 1: OIL  
+  GLCD.FillRect(83, 0, 111, 63, PIXEL_OFF); // clear the area around the Horizon   
+  if(RightScreen == 1) {
+    textAreaEMSAltKey1.print("OIL TEMP");
+    textAreaEMSAltLabel1.ClearArea();
+    textAreaEMSAltLabel1.print("C");
+    
+    textAreaEMSAltKey2.print("OIL  PR.");
+    textAreaEMSAltLabel2.print("Bar");
+    
+    textAreaEMSAltKey3.print("FUEL PR.");
+    textAreaEMSAltLabel3.print("Bar");
+    
+    textAreaEMSAltKey4.print("ALTERN. ");
+    textAreaEMSAltLabel4.print("Amp");
+    
+    textAreaEMSAltKey5.print("BATTERY ");
+    textAreaEMSAltLabel5.print("Amp");
+    
+    textAreaEMSAltKey6.print("VOLTAGE ");
+    textAreaEMSAltLabel6.ClearArea();
+    textAreaEMSAltLabel6.print("V");
+  }
+  if(RightScreen == 0) {
+    RightScreenDefault();
+  }
+}
+
+
 
     if(CAN_MSGAVAIL == CAN.checkReceive())            // check if data coming
     {
@@ -54,12 +124,15 @@ switch (canId) {
           EGT[2] = (buf[3] << 8) | buf[2];
           CHT[1] = (buf[5] << 8) | buf[4];
           CHT[2] = (buf[7] << 8) | buf[6];
-          
-          DisplayEGT(1, EGT[1]);
-          DisplayEGT(2, EGT[2]);
 
-          DisplayCHT(1, CHT[1]);
-          DisplayCHT(2, CHT[2]);
+          if (RightScreen == 0) {
+          
+            DisplayEGT(1, EGT[1]);
+            DisplayEGT(2, EGT[2]);
+  
+            DisplayCHT(1, CHT[1]);
+            DisplayCHT(2, CHT[2]);
+          }
 
       }
       break;
@@ -71,12 +144,14 @@ switch (canId) {
           EGT[4] = (buf[3] << 8) | buf[2];
           CHT[3] = (buf[5] << 8) | buf[4];
           CHT[4] = (buf[7] << 8) | buf[6];
-          
-          DisplayEGT(3, EGT[3]);
-          DisplayEGT(4, EGT[4]);
 
-          DisplayCHT(3, CHT[3]);
-          DisplayCHT(4, CHT[4]);
+          if (RightScreen == 0) {
+            DisplayEGT(3, EGT[3]);
+            DisplayEGT(4, EGT[4]);
+  
+            DisplayCHT(3, CHT[3]);
+            DisplayCHT(4, CHT[4]);
+          }
       }
       break;
 
@@ -88,11 +163,13 @@ switch (canId) {
           CHT[5] = (buf[5] << 8) | buf[4];
           CHT[6] = (buf[7] << 8) | buf[6];
 
-          DisplayEGT(5, EGT[5]);
-          DisplayEGT(6, EGT[6]);
-
-          DisplayCHT(5, CHT[5]);
-          DisplayCHT(6, CHT[6]);
+          if (RightScreen == 0) {
+            DisplayEGT(5, EGT[5]);
+            DisplayEGT(6, EGT[6]);
+  
+            DisplayCHT(5, CHT[5]);
+            DisplayCHT(6, CHT[6]);
+          }
       }
       break;
 
@@ -100,7 +177,8 @@ switch (canId) {
       {
       //******* Electric system Volts and Amps
           EL_Volts = (buf[1] << 8) | buf[0];
-          EL_Amps  = (buf[3] << 8) | buf[2];
+          EL_AltAmps  = (buf[3] << 8) | buf[2]; // Alternator Amps
+          EL_BatAmps  = (buf[5] << 8) | buf[4]; // Battery Amps
 
           Show_VoltAmp();
       }
@@ -135,33 +213,9 @@ switch (canId) {
     break;
   }
 
-        
-//if (canId == 80 ) {
- //       Serial.println("-----------------------------");
-//        Serial.print("Msg proc time: ");
-//        Serial.println(millis() - LoopTimer);
-//        Serial.print("CAN ID: ");
-//        Serial.print(canId);
-//        Serial.print(" EXT: ");
-//        Serial.print(ext);
-//        Serial.print(" Data: ");
-//        for(int i = 0; i<len; i++)    // print the data
-//        {
-//            Serial.print(buf[i]);
-//            Serial.print("\t");
-//         }
-//        Serial.println();
-  //      Serial.print("Msg proc time: ");
-  //      Serial.println(millis() - LoopTimer);
-  //      LoopTimer = millis();
-
-    //     Serial.print("TankLevel1: ");
-      //  Serial.println(TankLevel1);
-        
- //   }
+      if (RightScreen == 1) {
+          EngineAltData1();
+      }
     
-//        Serial.print("Msg proc time: ");
-//        Serial.println(millis() - LoopTimer);
-    //LoopTimer = millis();
     } 
 }

@@ -26,9 +26,18 @@ void EMS_Display() {
   GLCD.print("RPM");
   GLCD.DrawLine(14, 23, 82, 23);
 
-  // **** endurance box *****************
+  // **** Flow and Endurance box *****************
   // GLCD.CursorToXY(17, 25);
   //GLCD.print("FL");
+  textFlowLabel.DefineArea(18, 24 , 14, 1 , newbasic3x5);
+  textEndurLabel.DefineArea(18, 32 , 14, 1 , newbasic3x5);
+  textFlowLabel.print("FL      /     ");
+  textEndurLabel.print("EN      /     ");
+  textFlowActual.DefineArea(30, 24 , 4, 1 , newbasic3x5);
+  textFlowPlanned.DefineArea(62, 24 , 4, 1 , newbasic3x5);
+  textEndurActual.DefineArea(30, 32 , 4, 1 , newbasic3x5);
+  textEndurPlanned.DefineArea(62, 32 , 4, 1 , newbasic3x5);
+  
   GLCD.DrawLine(14, 41, 82, 41);
 
 // *********** OIL ***************
@@ -54,58 +63,34 @@ void EMS_Display() {
   GLCD.print("A");
 
 //************ EGT + CHT ****************************
-GLCD.DrawLine(82, 0, 82, 63);
-
-   if (CYL == 4) {
-     GLCD.DrawLine(82, 24, 195, 24);
-     GLCD.CursorToXY(85, 0);
-     GLCD.print("E");
-     GLCD.CursorToXY(85, 8);
-     GLCD.print("G");
-     GLCD.CursorToXY(85, 16);
-     GLCD.print("T");
   
-     GLCD.CursorToXY(85, 25);
-     GLCD.print("C");
-     GLCD.CursorToXY(85, 33);
-     GLCD.print("H");
-     GLCD.CursorToXY(85, 41);
-     GLCD.print("T");
-     GLCD.DrawLine(82, 49, 195, 49);
-   } else {
-     GLCD.DrawLine(82, 32, 195, 32);
-     GLCD.CursorToXY(85, 3);
-     GLCD.print("E");
-     GLCD.CursorToXY(85, 11);
-     GLCD.print("G");
-     GLCD.CursorToXY(85, 19);
-     GLCD.print("T");
+  RightScreenDefault();
   
-     GLCD.CursorToXY(85, 35);
-     GLCD.print("C");
-     GLCD.CursorToXY(85, 44);
-     GLCD.print("H");
-     GLCD.CursorToXY(85, 53);
-     GLCD.print("T");
-   }
-   InitEGT(1);
-   InitEGT(2);
-   InitEGT(3);
-   InitEGT(4);
-   if (CYL == 6) {
-     InitEGT(5);
-     InitEGT(6);
-   }
-
-   InitCHT(1);
-   InitCHT(2);
-   InitCHT(3);
-   InitCHT(4);
-   if (CYL == 6) {
-     InitCHT(5);
-     InitCHT(6);
-   }
-
 //****************** End of EGT + CHT **************
+
+  //**************** Alternative Engine Data area *******************
+  textAreaEMSAltKey1.DefineArea(90, 0 , 8, 1 , System5x7);
+  textAreaEMSAltValue1.DefineArea(140, 0 , 5, 1 , System5x7);
+  textAreaEMSAltLabel1.DefineArea(174, 0 , 3, 1 , System5x7);
+
+  textAreaEMSAltKey2.DefineArea(90, 11 , 8, 1 , System5x7);
+  textAreaEMSAltValue2.DefineArea(140, 11 , 5, 1 , System5x7);
+  textAreaEMSAltLabel2.DefineArea(174, 11 , 3, 1 , System5x7);
+
+  textAreaEMSAltKey3.DefineArea(90, 22 , 8, 1 , System5x7);
+  textAreaEMSAltValue3.DefineArea(140, 22 , 5, 1 , System5x7);
+  textAreaEMSAltLabel3.DefineArea(174, 22 , 3, 1 , System5x7);
+
+  textAreaEMSAltKey4.DefineArea(90, 34 , 8, 1 , System5x7);
+  textAreaEMSAltValue4.DefineArea(140, 34 , 5, 1 , System5x7);
+  textAreaEMSAltLabel4.DefineArea(174, 34 , 3, 1 , System5x7);
+
+  textAreaEMSAltKey5.DefineArea(90, 45 , 8, 1 , System5x7);
+  textAreaEMSAltValue5.DefineArea(140, 45 , 5, 1 , System5x7);
+  textAreaEMSAltLabel5.DefineArea(174, 45 , 3, 1 , System5x7);
+
+  textAreaEMSAltKey6.DefineArea(90, 56 , 8, 1 , System5x7);
+  textAreaEMSAltValue6.DefineArea(140, 56 , 5, 1 , System5x7);
+  textAreaEMSAltLabel6.DefineArea(174, 56 , 3, 1 , System5x7);
 
 }

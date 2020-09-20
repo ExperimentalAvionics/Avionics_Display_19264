@@ -14,7 +14,7 @@
 #include "mcp_can.h"
 
 //EMS Sensor Board configuration - 4 or 6 cylinders engine
-const int CYL = 6;
+const int CYL = 4;
 
 // CAN related stuff
 const int SPI_CS_PIN = 49;
@@ -44,7 +44,8 @@ unsigned int OilPressure = 0;
 unsigned int EGT[7] = {0,0,0,0,0,0,0}; // first two bytes will be wasted for the sake of convenience and clarity :)
 unsigned int CHT[7] = {0,0,0,0,0,0,0};
 unsigned int EL_Volts = 0;
-unsigned int EL_Amps = 0;
+int EL_BatAmps = 0;
+int EL_AltAmps = 0;
 unsigned long TT_RPM = 0;
 unsigned long TT_Clock = 0;
 
@@ -91,8 +92,45 @@ gText textAreaSetting2;
 gText textAreaSetting3;
 gText textAreaSetting4;
 
+//********** EMS **************
 
-int MidScreen = 0;
+//*********** Fuel flow ***************
+gText textFlowLabel;
+gText textEndurLabel;
+gText textFlowActual;
+gText textFlowPlanned;
+gText textEndurActual;
+gText textEndurPlanned;
+
+//******** EMS Alt Right Screen *******
+gText textAreaEMSAltKey1;
+gText textAreaEMSAltValue1;
+gText textAreaEMSAltLabel1;
+
+gText textAreaEMSAltKey2;
+gText textAreaEMSAltValue2;
+gText textAreaEMSAltLabel2;
+
+gText textAreaEMSAltKey3;
+gText textAreaEMSAltValue3;
+gText textAreaEMSAltLabel3;
+
+gText textAreaEMSAltKey4;
+gText textAreaEMSAltValue4;
+gText textAreaEMSAltLabel4;
+
+gText textAreaEMSAltKey5;
+gText textAreaEMSAltValue5;
+gText textAreaEMSAltLabel5;
+
+gText textAreaEMSAltKey6;
+gText textAreaEMSAltValue6;
+gText textAreaEMSAltLabel6;
+
+
+int MidScreen = 0;    // alternative screen for EFIS (GPS data, etc)
+int RightScreen = 0;  // alternative screen for EMS (on the right side)
+unsigned long int RightScreenTimer = 0;
 
 unsigned int  Airspeed = 0; //Airspeed
 unsigned int Altitude = 0;

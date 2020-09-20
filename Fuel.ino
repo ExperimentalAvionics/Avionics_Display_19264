@@ -30,20 +30,51 @@ String s_liters = "";
 
 
 void Show_FuelFlow() {
+char buffer[5];
 // Flow
-  GLCD.SelectFont(newbasic3x5);
-  GLCD.CursorToXY(18, 24);
-  GLCD.print("FL 20.4 / 20.0");
-  GLCD.CursorToXY(18, 32);
-  GLCD.print("E 03:10 / 03:20");
+float EnduranceOnFlow = 0;
+float EnduranceOnPlan = 0;
+
+//temporary. read it from eeprom
+float PlannedFlow = 20.0;
+
+
+  if (FuelFlow > 0) {
+    EnduranceOnFlow = (float)TankLevel1*100.0/FuelFlow;
+  }
+
+  if (PlannedFlow >0) {
+    EnduranceOnPlan = (float)TankLevel1/PlannedFlow;
+  }
+
+    dtostrf(((float)FuelFlow/100), 4, 1, buffer );
+    textFlowActual.ClearArea();
+    textFlowActual.print(buffer);
+
+    dtostrf(PlannedFlow, 4, 1, buffer );
+    textFlowPlanned.ClearArea();
+    textFlowPlanned.print(buffer);
+
+    dtostrf(EnduranceOnFlow, 4, 1, buffer );
+    textEndurActual.ClearArea();
+    textEndurActual.print(buffer);
+
+    dtostrf(EnduranceOnPlan, 4, 1, buffer );
+    textEndurPlanned.ClearArea();
+    textEndurPlanned.print(buffer);
+
 }
 
 
 void Show_FuelPressure() {
 
+// Rotax 912 ULS:
+// Max 0.4 Bar (5.8 PSI)
+// Min 0.15 Bar (2.2 PSI)
+
 // this is normal fuel pressure range
-unsigned int FPressMin = 5; //30% of the bottom scale kPa
-unsigned int FPressMax = 20; //20% of the upper scale kPa
+unsigned int FPressMin = 150; //30% of the bottom scale. Pressure comes in Miilibars
+unsigned int FPressMax = 400; //20% of the upper scale. Pressure comes in Miilibars
 
 unsigned int AbsMax;
 unsigned int BarFull = 45; //full scale is 45 pix

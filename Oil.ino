@@ -8,14 +8,23 @@ void Show_Oil() {
  *  Oil  Continuous Temperature 80 - 100°C  (176° - 212°F) 
  */
 
+// Oil Temperature 
+// For Rotax 912
+// Max 130C
+// Min 50C
+// normal range 90 - 110
 
+// Oil pressure
+// Max. 7 bar (102 psi) (Red)
+// Min. 0.8 bar (12 psi) (below 3500 rpm) (Red)
+// Normal 2.0 to 5.0 bar (29-73 psi) (above 3500 rpm) (Green)
 
 // this is normal oil temperature range
-unsigned int TempMin = 80; //30% of the bottom scale
-unsigned int TempMax = 100; //20% of the upper scale
+unsigned int TempMin = 900; //30% of the bottom scale --- in Deg Celsius x 10
+unsigned int TempMax = 1100; //20% of the upper scale --- in Deg Celsius x 10
 
-unsigned int PressMin = 80; //kPa
-unsigned int PressMax = 525; //kPa
+unsigned int PressMin = 2000; //Oil Pressure comes in Millibars
+unsigned int PressMax = 5000; //Oil Pressure comes in Millibars
 
 unsigned int AbsMax;
 unsigned int BarFull = 45; //full scale is 45 pix

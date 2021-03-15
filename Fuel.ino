@@ -6,7 +6,7 @@ unsigned int current_bar = 56;
 unsigned int bar_hight = 0;
 // unsigned int last_bar = 39;
 unsigned int current_liters = 0;
-unsigned int full_tank_liters = 82;
+unsigned int full_tank_liters = 75;
 String s_liters = "";
 // Fuel
   

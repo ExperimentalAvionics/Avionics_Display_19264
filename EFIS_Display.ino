@@ -35,7 +35,12 @@ void EFIS_Display() {
   textAreaMagCal.DefineArea(4, 44 , 1, 1 , newbasic3x5);
 
  //***************** Time *******************
- 
+
+  textAreaTimeMaster.DefineArea(3, 24 , 1, 1 , newbasic3x5);
+  if (TimeMaster == 1) {
+    textAreaTimeMaster.print("*");
+  }
+  textAreaUTC.print("LOC");
   textAreaUTC.DefineArea(8, 24 , 3, 1 , newbasic3x5);
   if (TimeConfig == 1) {
     textAreaUTC.print("LOC");

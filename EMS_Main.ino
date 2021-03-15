@@ -84,6 +84,13 @@ if (RightScreen != encCurrentValue % 2 and MenuItem == 0) {
 
 switch (canId) {
 
+      case 25:
+      {
+          // another unit sending time and requesting to become a time master
+          ReceiveTime();
+      }
+      break;
+
     case 50:
       {
       //RPM, Fuel Flow and Fuel Pressure

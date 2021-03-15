@@ -48,6 +48,7 @@ int EL_BatAmps = 0;
 int EL_AltAmps = 0;
 unsigned long TT_RPM = 0;
 unsigned long TT_Clock = 0;
+unsigned long UnixTime = 0;
 
 // EFIS related variables
 //*************** Text areas ***/************
@@ -60,6 +61,7 @@ gText textAreaMAG;
 gText textAreaDEG;
 gText textAreaMagCal;
 
+gText textAreaTimeMaster;
 gText textAreaUTC;
 gText textAreaUTCTime;
 gText textAreaFLT;
@@ -181,6 +183,11 @@ int MinFlightSpeed = 20;          // Airspeed that triggers flight timer
 int MinFlightSpeed_MemOffset = 2; // two bytes (int) for storing min flight switch
 byte TimeConfig = 0;              // Time UTC or Local UTC = 0, Local = 1
 int TimeConfig_MemOffset = 4;     // 
+byte TimeMaster = 1;
+int TimeMaster_MemOffset = 5; 
+unsigned long  TimeSendPeriod = 10000;
+unsigned long  TimeSendTimestamp = 0;
+unsigned long  TimeReceiveTimestamp = 0;
 
 
 
@@ -265,19 +272,33 @@ void setup() {
 }
 
 void loop() {
+  // send the time periodically if this unit is the time master
+  if (millis() - TimeSendTimestamp > TimeSendPeriod and TimeMaster == 1) {
+    SendTime();
+    TimeSendTimestamp = millis(); 
+  }
+
+// if this unit is not a time master and no system time message arrived over last 120 seconds, self-promote to time master
+  if (millis()-TimeReceiveTimestamp > 120000 and TimeMaster == 0) {
+    TimeMaster = 1;
+    EEPROM.put(TimeMaster_MemOffset, 1);
+    textAreaTimeMaster.print("*");
+    Serial.println("The unit is self-promoted to a Time Master");
+  }
+  
 
   if (digitalRead(44) == LOW and DisplayScreen == 1) {
     DisplayScreen  = 2;
     Init_Screen();
-    Serial.print("DisplayScreen: ");
-    Serial.println(DisplayScreen);
+    //Serial.print("DisplayScreen: ");
+    //Serial.println(DisplayScreen);
   }
 
   if (digitalRead(44) == HIGH and DisplayScreen == 2) {
     DisplayScreen  = 1;
     Init_Screen();
-    Serial.print("DisplayScreen: ");
-    Serial.println(DisplayScreen);
+    //Serial.print("DisplayScreen: ");
+    //Serial.println(DisplayScreen);
   }
 
 
@@ -295,5 +316,39 @@ switch (DisplayScreen) {
           break;
   }
 
+}
+
+// Send current time if this unit is Master time keeper
+void SendTime() {
+  unsigned long UnixTime = 0;
+  DateTime now = RTC.now();
+  UnixTime = now.unixtime();
+  Serial.print("Sending System Time ");
+  Serial.println(UnixTime);
+  buf[0] = UnixTime;
+  buf[1] = UnixTime >> 8;
+  buf[2] = UnixTime >> 16;
+  buf[3] = UnixTime >> 24;
+  CAN.sendMsgBuf(25, 0, 4, buf);
+ //Serial.println(((unsigned long)buf[3] << 24) | ((unsigned long)buf[2] << 16) | ((unsigned long)buf[1] << 8) | (unsigned long)buf[0]);
+
+
 
 }
+
+void ReceiveTime() {
+  TimeReceiveTimestamp = millis();
+  UnixTime = ((unsigned long)buf[3] << 24) | ((unsigned long)buf[2] << 16) | ((unsigned long)buf[1] << 8) | (unsigned long)buf[0];
+  DateTime now = RTC.now();
+  if (abs(now.unixtime()- UnixTime) >10000) {
+    RTC.adjust(DateTime(UnixTime));
+  }
+  
+  // if thes is the first system time message, turn off TimeMaster flag and record it into the EEPROM
+  if (TimeMaster == 1) {
+    EEPROM.put(TimeMaster_MemOffset, 0);
+    TimeMaster = 0;
+    textAreaTimeMaster.print(" ");
+    Serial.println("The unit is no longer a Time master");
+  }
+  }

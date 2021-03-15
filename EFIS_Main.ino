@@ -71,7 +71,12 @@ if(CAN_MSGAVAIL == CAN.checkReceive())            // check if data coming
 
 
 switch (canId) {
-
+    case 25:
+    {
+        // another unit sending time and requesting to become a time master
+        ReceiveTime();
+    }
+    break;
     case 40:
       {
       // Airspeed, ALT, Vert speed

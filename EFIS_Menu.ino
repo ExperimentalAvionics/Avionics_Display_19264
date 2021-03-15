@@ -366,6 +366,10 @@ void EFIS_Menu() {
     ButtonPush = 0;
     KeepLoop1 = true;
 
+    SendTime();      // broadcast the time immediately
+    TimeMaster = 1;  // and become the time master
+    TimeSendTimestamp = millis();
+    Serial.println("The unit is set to a Time Master");
   }
 //******************************** END of Setting UTC time *************************
 

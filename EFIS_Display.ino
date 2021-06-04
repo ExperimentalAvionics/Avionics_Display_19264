@@ -88,7 +88,17 @@ void EFIS_Display() {
 
 //  textAreaGS.print("GS:");
 
+  //**************** TAS area *******************
+  textAreaTASDATA.DefineArea(71, 1 , 13, 1 , newbasic3x5);
+  textAreaTAS.DefineArea(69, 12, 4, 1 , System5x7);
+  textAreaTASvalue.DefineArea(94, 12, 3, 1 , System5x7);
+  textAreaOAT.DefineArea(69, 22, 4, 1 , System5x7);
+  textAreaOATvalue.DefineArea(94, 22, 5, 1 , System5x7);
+  textAreaWND.DefineArea(69, 32, 4, 1 , System5x7);
+  textAreaWNDdirection.DefineArea(94, 32, 5, 1 , System5x7);
+  textAreaWNDspeed.DefineArea(94, 42, 5, 1 , System5x7);
 
+  
   textAreaQNHvalue.ClearArea();
   textAreaQNHvalue.Printf("%04d", QNH);
 

@@ -1,3 +1,17 @@
+void Init_GPS() {
+// prepare the relevant static stuff on the screen  
+    textAreaGPSDATA.print("GPS DATA");
+    textAreaGSvalue.ClearArea();
+    textAreaGPSaltvalue.ClearArea();
+    textAreaGPSTRKvalue.ClearArea();
+    textAreaGS.print("GS:");
+    textAreaGPSalt.print("ALT:");
+    textAreaGPSTRK.print("TRK:");
+    textAreaGSvalue.print(GroundSpeed);   
+    textAreaGPSaltvalue.print(GPSaltitude); 
+    textAreaGPSTRKvalue.print(Tracking);
+  }
+
 void Show_GPS() {
 
   textAreaGSvalue.ClearArea();
@@ -5,6 +19,4 @@ void Show_GPS() {
 
   textAreaGPSaltvalue.ClearArea();
   textAreaGPSaltvalue.print(GPSaltitude);   
-
-
 }

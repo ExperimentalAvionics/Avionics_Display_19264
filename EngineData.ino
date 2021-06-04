@@ -63,7 +63,7 @@ void EngineAltData1() {
   char buffer[5];
 // refresh data on the screen every 500ms
   if (millis() - RightScreenTimer > 500) {
-
+ 
     dtostrf(((float)OilTemperature/10), 5, 0, buffer );
     textAreaEMSAltValue1.ClearArea();
     textAreaEMSAltValue1.print(buffer);
@@ -90,4 +90,27 @@ void EngineAltData1() {
     
     RightScreenTimer = millis();
   }
+//  ForceDisplay = 0;
+}
+
+void Init_EngineAltData1() {
+    textAreaEMSAltKey1.print("OIL TEMP");
+    textAreaEMSAltLabel1.ClearArea();
+    textAreaEMSAltLabel1.print("C");
+    
+    textAreaEMSAltKey2.print("OIL  PR.");
+    textAreaEMSAltLabel2.print("Bar");
+    
+    textAreaEMSAltKey3.print("FUEL PR.");
+    textAreaEMSAltLabel3.print("Bar");
+    
+    textAreaEMSAltKey4.print("ALTERN. ");
+    textAreaEMSAltLabel4.print("Amp");
+    
+    textAreaEMSAltKey5.print("BATTERY ");
+    textAreaEMSAltLabel5.print("Amp");
+    
+    textAreaEMSAltKey6.print("VOLTAGE ");
+    textAreaEMSAltLabel6.ClearArea();
+    textAreaEMSAltLabel6.print("V");
 }

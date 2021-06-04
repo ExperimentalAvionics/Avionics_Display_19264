@@ -8,6 +8,26 @@ void Init_Screen() {
           //******************** End reading EEPROM
 
           EFIS_Display();
+          
+          ForceDisplay = 1;
+          Show_AData();
+          
+          ForceDisplay = 1;
+          Show_Heading();
+          
+          ForceDisplay = 1;
+          Show_Accel();
+          
+          if(MidScreen == 1) {
+            Init_GPS();
+            ForceDisplay = 1;
+            Show_GPS(); 
+          }
+          if(MidScreen == 2) {
+            Init_TAS();  
+            ForceDisplay = 1;
+            Show_TAS(); 
+          }
           break;
       case 2:   // EMS
           EMS_Display();

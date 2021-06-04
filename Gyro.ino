@@ -1,13 +1,16 @@
 void Show_Heading() {
-  int   MAG = 0; // to int
-  textAreaMagCal.ClearArea();
-  textAreaMagCal.Printf("%01d", (0x03 & CalibrationStats));
-  // set the local variables
-  MAG = HDG;
 
-  textAreaMAG.ClearArea();
-  textAreaMAG.Printf("%03d", MAG); 
-
+  if (CalibrationStats != CalibrationStats_old or ForceDisplay == 1) {
+    CalibrationStats_old = CalibrationStats;
+    textAreaMagCal.ClearArea();
+    textAreaMagCal.Printf("%01d", (0x03 & CalibrationStats));
+  }
+  if (HDG != HDG_old or ForceDisplay == 1) {
+    HDG_old = HDG;
+    textAreaMAG.ClearArea();
+    textAreaMAG.Printf("%03d", HDG);
+  }
+  ForceDisplay = 0; 
 }
 
 void Show_Gyro() {
@@ -18,7 +21,8 @@ void Show_Gyro() {
   int xp60, yp60;
   int xp30, yp30;
   String s_tmp;
-
+  float Gforce = 1.0;
+  int iGforce;
 
 
   // Check calibration status of the sensors
@@ -246,15 +250,27 @@ yp30_old = yp30;
   xEndOld = xEnd;
   yEndOld = yEnd;
 
+// ****************** G-Force meter ******************************
+
+    Gforce = (float)AccZ/100;
+    
+    iGforce = round(Gforce*10/9.8);
+   
+    textAreaGmeter.ClearArea();
+    textAreaGmeter.print("G");
+    textAreaGmeter.CursorTo(2);
+    textAreaGmeter.println(iGforce/10.0, 1); 
+
 }
 
 
 //***********************************************************************************************
 void Show_Accel() {
-int xBall, iGforce, xZero = 96;
-float ball, Gforce = 1.0;
+int xBall, xZero = 96;
+float ball;
     
 //************************ Slip ball **************************
+
 
   ball = ((float)AccX/100) * 4.0; // convert to number of pixels and set sensitivity
 
@@ -269,7 +285,8 @@ float ball, Gforce = 1.0;
 
   xBall = xZero - ball;
 
-
+if (xBallOld != xBall or ForceDisplay == 1) {
+  
     GLCD.FillCircle(xBallOld, 58, 3, PIXEL_OFF); 
     GLCD.FillCircle(xBall, 58, 3); 
     xBallOld = xBall;
@@ -277,18 +294,11 @@ float ball, Gforce = 1.0;
     //GLCD.DrawVLine(96, 53, 10);
     GLCD.DrawVLine(91, 53, 10);
     GLCD.DrawVLine(101, 53, 10); 
-    
+
+}
+    ForceDisplay = 0;
 // ************************** END OF Slipball stuff *******************************
 
-// ****************** G-Force meter ******************************
 
-    Gforce = (float)AccZ/100;
-    
-    iGforce = round(Gforce*10/9.8);
-   
-    textAreaGmeter.ClearArea();
-    textAreaGmeter.print("G");
-    textAreaGmeter.CursorTo(2);
-    textAreaGmeter.println(iGforce/10.0, 1); 
   
 }

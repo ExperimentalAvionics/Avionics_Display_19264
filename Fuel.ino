@@ -14,6 +14,10 @@ String s_liters = "";
   bar_hight= ((double)bottom_bar - (double)top_bar)*(double)TankLevel1/(double)full_tank_liters;
   current_bar = bottom_bar - bar_hight;
 
+  if (current_liters < 10 ) {
+    s_liters = " ";
+  }
+  
   s_liters += current_liters;
   s_liters += "L";
  

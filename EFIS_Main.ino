@@ -38,21 +38,20 @@ if (MenuItem == 2) {
 //======================== change Middle screen ==========================
 encCurrentValue = abs(myEnc.read()/4);
 
-if (MidScreen != encCurrentValue % 2 and MenuItem == 0) {
-  MidScreen = encCurrentValue % 2; // two screens for now: 0: Artificial Horizon; 1: GPS data  
+if (MidScreen != encCurrentValue % 3 and MenuItem == 0) {
+  MidScreen = encCurrentValue % 3; // three screens for now: 0: Artificial Horizon; 1: GPS data; 2: TAS data  
   GLCD.FillRect(66, 1, 61, 50, PIXEL_OFF); // clear the area around the Horizon   
   if(MidScreen == 1) {
-    textAreaGPSDATA.print("GPS DATA");
-    textAreaGSvalue.ClearArea();
-    textAreaGPSaltvalue.ClearArea();
-    textAreaGPSTRKvalue.ClearArea();
-    textAreaGS.print("GS:");
-    textAreaGPSalt.print("ALT:");
-    textAreaGPSTRK.print("TRK:");
-    textAreaGSvalue.print(GroundSpeed);   
-    textAreaGPSaltvalue.print(GPSaltitude); 
-    textAreaGPSTRKvalue.print(Tracking); 
+    Init_GPS();
+    ForceDisplay = 1;
+    Show_GPS(); 
   }
+    if(MidScreen == 2) {
+    Init_TAS();  
+    ForceDisplay = 1;
+    Show_TAS(); 
+  }
+
 }
 
 
@@ -84,6 +83,9 @@ switch (canId) {
           Altitude  = (buf[4] << 16) | (buf[3] << 8) | buf[2];
           VertSpeed = (buf[6] << 8) | buf[5];
           Show_AData();
+          if (MidScreen == 2) {
+            Show_TAS();
+          }
       }
       break;
     case 41:
@@ -120,8 +122,8 @@ switch (canId) {
           AccY  = (buf[3] << 8) | buf[2];
           AccZ = (buf[5] << 8) | buf[4];
           CalibrationStats = buf[6];
-          Show_Accel();
 
+          Show_Accel();
       }
       break;
     case 100:
@@ -161,7 +163,7 @@ switch (canId) {
           if (MidScreen == 1) {
               Show_GPS();
           }
-
+          
       }
       break;
 

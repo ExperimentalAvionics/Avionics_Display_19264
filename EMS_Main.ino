@@ -43,25 +43,7 @@ if (RightScreen != encCurrentValue % 2 and MenuItem == 0) {
   RightScreen = encCurrentValue % 2; // two screens for now: 0: EGT+CHT; 1: OIL  
   GLCD.FillRect(83, 0, 111, 63, PIXEL_OFF); // clear the area around the Horizon   
   if(RightScreen == 1) {
-    textAreaEMSAltKey1.print("OIL TEMP");
-    textAreaEMSAltLabel1.ClearArea();
-    textAreaEMSAltLabel1.print("C");
-    
-    textAreaEMSAltKey2.print("OIL  PR.");
-    textAreaEMSAltLabel2.print("Bar");
-    
-    textAreaEMSAltKey3.print("FUEL PR.");
-    textAreaEMSAltLabel3.print("Bar");
-    
-    textAreaEMSAltKey4.print("ALTERN. ");
-    textAreaEMSAltLabel4.print("Amp");
-    
-    textAreaEMSAltKey5.print("BATTERY ");
-    textAreaEMSAltLabel5.print("Amp");
-    
-    textAreaEMSAltKey6.print("VOLTAGE ");
-    textAreaEMSAltLabel6.ClearArea();
-    textAreaEMSAltLabel6.print("V");
+    Init_EngineAltData1();
   }
   if(RightScreen == 0) {
     RightScreenDefault();

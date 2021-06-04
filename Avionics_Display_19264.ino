@@ -87,6 +87,15 @@ gText textAreaGPSDATA;
 gText textAreaGPSTRK;
 gText textAreaGPSTRKvalue;
 
+gText textAreaTASDATA;
+gText textAreaOAT;
+gText textAreaOATvalue;
+gText textAreaTAS;
+gText textAreaTASvalue;
+gText textAreaWND;
+gText textAreaWNDdirection;
+gText textAreaWNDspeed;
+
 //***********MENU*************
 gText textAreaSetting0;
 gText textAreaSetting1;
@@ -135,14 +144,20 @@ int RightScreen = 0;  // alternative screen for EMS (on the right side)
 unsigned long int RightScreenTimer = 0;
 
 unsigned int  Airspeed = 0; //Airspeed
+unsigned int Airspeed_old = 0;
 unsigned int Altitude = 0;
+unsigned int Altitude_old = 0;
 int VertSpeed = 0;
+int VertSpeed_old = 0;
 int AOA = 0;
 
 int OAT = 0;
+int OAT_old = 0;
+
 int Humidity = 0;
 
 unsigned int HDG = 0;
+unsigned int HDG_old = 0;
 int Roll = 0;
 int Pitch = 0;
 int TurnRate = 0; 
@@ -151,6 +166,7 @@ int AccX = 0;
 int AccY = 0;
 int AccZ = 0;
 unsigned int CalibrationStats = 0;
+unsigned int CalibrationStats_old = 0;
 
 unsigned int GroundSpeed = 0;
 unsigned int GPSaltitude = 0;
@@ -200,6 +216,8 @@ unsigned long LoopTimer = 0;
 // 3 - something else
 unsigned int DisplayScreen = 1;
 unsigned int ScreenChange = 1;  // Variable to track display changes
+
+byte ForceDisplay = 1;
 
 //*************** Text areas ***/************
 gText textAreaRPM;
@@ -258,8 +276,8 @@ void setup() {
     GLCD.print("Experimental Avionics");
     GLCD.CursorTo(9, 4);
     GLCD.print("Display System");
-    GLCD.CursorTo(14, 6);
-    GLCD.print("2020");
+    GLCD.CursorTo(10, 6);
+    GLCD.print("2021-06-04");
     delay(2000);
     GLCD.ClearScreen();
 
@@ -289,6 +307,7 @@ void loop() {
 
   if (digitalRead(44) == LOW and DisplayScreen == 1) {
     DisplayScreen  = 2;
+    ForceDisplay = 1;
     Init_Screen();
     //Serial.print("DisplayScreen: ");
     //Serial.println(DisplayScreen);
@@ -296,6 +315,7 @@ void loop() {
 
   if (digitalRead(44) == HIGH and DisplayScreen == 2) {
     DisplayScreen  = 1;
+    ForceDisplay = 1;
     Init_Screen();
     //Serial.print("DisplayScreen: ");
     //Serial.println(DisplayScreen);
@@ -338,7 +358,7 @@ void SendTime() {
 
 void ReceiveTime() {
   TimeReceiveTimestamp = millis();
-  UnixTime = ((unsigned long)buf[3] << 24) | ((unsigned long)buf[2] << 16) | ((unsigned long)buf[1] << 8) | (unsigned long)buf[0];
+  UnixTime = (buf[3] << 24) | (buf[2] << 16) | (buf[1] << 8) | buf[0];
   DateTime now = RTC.now();
   if (abs(now.unixtime()- UnixTime) >10000) {
     RTC.adjust(DateTime(UnixTime));

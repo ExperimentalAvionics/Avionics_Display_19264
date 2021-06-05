@@ -153,8 +153,12 @@ int AOA = 0;
 
 int OAT = 0;
 int OAT_old = 0;
-
 int Humidity = 0;
+int TAS = 0;
+int TAS_old = 0;
+
+unsigned int RawPressure = 0;
+float Delta = 0;
 
 unsigned int HDG = 0;
 unsigned int HDG_old = 0;

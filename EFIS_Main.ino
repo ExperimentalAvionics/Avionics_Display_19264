@@ -102,6 +102,11 @@ switch (canId) {
          // Show_OAT();
       }
       break;
+    case 43:
+      {
+          RawPressure = (buf[1] << 8) | buf[0];
+      }
+      break;
     case 72:
       {
         // HDG   Roll    Pitch   TurnRate  

@@ -11,7 +11,7 @@ Unzip libraries.zip to the "libraries" folder in your Arduino environment.
 ## Release Notes: ##
 
 ### 2021-06-04 ###
-* Added third scrollable screen for TAS data (includes TAS, OAT, and Wind);
+* Added third scrollable screen for TAS data (includes TAS, OAT, and Wind). Wind calculation is not included yet. Just a placeholder;
 * Fixed bug - G-loading appeared on other screens screen;
 * Altitude figure on display will change only if it is different from previous value by 5ft or more. Reason is to stabilize display and avoid flicker of the numbers.
 * VSI figure on display will change only if it is different from previous value by 20 ft/min or more. If VSI is within +/- 70ft/min the VSI will display Zero. Reason is to stabilize display and avoid flicker of the numbers.

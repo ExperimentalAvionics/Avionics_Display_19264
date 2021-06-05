@@ -83,7 +83,22 @@ void Init_TAS() {
 
 void Show_TAS() {
   // display TAS, OAT and Wind
-
+  // a bit of approximation for TAS. Good enough fopr practical purposes
+  
+  Delta = 288.15/((float)OAT/10.0 + 273.15)*((float)RawPressure/10132.5); //note RawPressure is hPa * 10
+  
+  if (Delta > 0) {        // just in case some sensor data goes mad
+    TAS = round(Airspeed/sqrt(Delta));
+  } else {
+    TAS = 0;
+  }
+  
+  if (TAS != TAS_old or ForceDisplay == 1) {
+    TAS_old = TAS;
+    textAreaTASvalue.ClearArea();
+    textAreaTASvalue.print(TAS);   
+  }
+  
   if (OAT != OAT_old or ForceDisplay == 1) {
     OAT_old = OAT;
     textAreaOATvalue.ClearArea();

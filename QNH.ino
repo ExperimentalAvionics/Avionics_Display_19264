@@ -17,6 +17,7 @@ void setQNH() {
    //textAreaQNHvalue.ClearArea();
    textAreaQNHvalue.Printf("%04d", QNH);
    GLCD.InvertRect(160, 31, 24, 8);
+   Send_QNH();
   }
 
    buttonState = digitalRead(Click_Button);
@@ -33,6 +34,6 @@ void setQNH() {
   }
 
 
-  Send_QNH();
+//  Send_QNH();
     
   }

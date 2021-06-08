@@ -10,6 +10,9 @@ Unzip libraries.zip to the "libraries" folder in your Arduino environment.
 
 ## Release Notes: ##
 
+### 2021-06-08 ###
+* Bug fix for QNH setting
+
 ### 2021-06-04 ###
 * Added third scrollable screen for TAS data (includes TAS, OAT, and Wind). Wind calculation is not included yet. Just a placeholder;
 * Fixed bug - G-loading appeared on other screens screen;

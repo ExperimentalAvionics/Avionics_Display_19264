@@ -281,7 +281,7 @@ void setup() {
     GLCD.CursorTo(9, 4);
     GLCD.print("Display System");
     GLCD.CursorTo(10, 6);
-    GLCD.print("2021-06-04");
+    GLCD.print("2021-06-16");
     delay(2000);
     GLCD.ClearScreen();
 
@@ -340,6 +340,7 @@ switch (DisplayScreen) {
           break;
   }
 
+  Warning_lights();
 }
 
 // Send current time if this unit is Master time keeper

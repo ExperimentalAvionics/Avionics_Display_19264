@@ -10,6 +10,9 @@ Unzip libraries.zip to the "libraries" folder in your Arduino environment.
 
 ## Release Notes: ##
 
+### 2021-06-24 ###
+* Minor change to display ground speed correctly
+
 ### 2021-06-16 ###
 * Enabled warning lights (LEDs) for monitoring Voltage, Oil Pressure and Oil Temperature. Yellow and Red bands defined in the Warning_lights() function
 

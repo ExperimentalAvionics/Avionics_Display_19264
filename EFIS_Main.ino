@@ -135,6 +135,7 @@ switch (canId) {
       {
        // GS    ALT   Track-T   Track-M -- 2 bytes each
           GroundSpeed = (buf[1] << 8) | buf[0];
+          GroundSpeed = GroundSpeed / 100;
           GPSaltitude  = (buf[3] << 8) | buf[2];
           TrackingTrue = (buf[5] << 8) | buf[4];
           TrackingMagnetic = (buf[7] << 8) | buf[6];

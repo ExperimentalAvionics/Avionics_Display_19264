@@ -281,7 +281,7 @@ void setup() {
     GLCD.CursorTo(9, 4);
     GLCD.print("Display System");
     GLCD.CursorTo(10, 6);
-    GLCD.print("2021-06-16");
+    GLCD.print("2021-06-24");
     delay(2000);
     GLCD.ClearScreen();
 

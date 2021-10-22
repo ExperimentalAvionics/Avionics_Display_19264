@@ -97,8 +97,8 @@ switch (canId) {
       break;
     case 42:
       {
-          OAT =  buf[0];
-          Humidity  = buf[1];
+          OAT = (buf[1] << 8)| buf[0];
+          Humidity  = buf[2];
          // Show_OAT();
       }
       break;

@@ -10,6 +10,9 @@ Unzip libraries.zip to the "libraries" folder in your Arduino environment.
 
 ## Release Notes: ##
 
+### 2021-10-23 ###
+* Bug fix. Outside air temperature was not displaying correct figures above 25C
+
 ### 2021-06-24 ###
 * Minor change to display ground speed correctly
 

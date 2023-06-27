@@ -10,6 +10,14 @@ Unzip libraries.zip to the "libraries" folder in your Arduino environment.
 
 ## Release Notes: ##
 
+
+### 2023-06-27 ###
+* Implemented backlight and LEDs brightness dimmer for night flying. The change is effective only with the Display PCB board ver 5 and above (blue or black). The brightness is voltage controlled via Arduino port A8 (DSUB pin 10). Photoresistor or a potentiometer can be used to supply the control voltage.
+* Implemented backup battery status display section in EMS screen. Module-A software needs to be updated for this feature to be functional.
+* Flight timer bug (timer stopped in EMS mode of display) has been fixed.
+* Fixed clock issue when clock was occasionally setting itself to random time and date.
+* Setting the clock on one display automatically sets the same time on another and keep the clocks in synch.
+
 ### 2021-10-23 ###
 * Bug fix. Outside air temperature was not displaying correct figures above 25C
 

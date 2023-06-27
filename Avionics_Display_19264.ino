@@ -13,6 +13,13 @@
 //#include <SPI.h>
 #include "mcp_can.h"
 
+// LCD backight control stuff
+const int BacklightControlPin = 6; //D6
+const int BacklightSensorPin = A8;
+unsigned int BacklightSensorReading = 0; // ADC reading
+unsigned int BacklightBrightness = 0; // LCD screen brightness, analog reading devided by 4
+unsigned int LEDBrightness = 0; // Warning LEDs brightness
+
 //EMS Sensor Board configuration - 4 or 6 cylinders engine
 const int CYL = 4;
 
@@ -49,6 +56,10 @@ int EL_AltAmps = 0;
 unsigned long TT_RPM = 0;
 unsigned long TT_Clock = 0;
 unsigned long UnixTime = 0;
+
+unsigned int BAT_Volts = 0;
+int BAT_Temperature = 0;
+byte BAT_Status = 0;
 
 // EFIS related variables
 //*************** Text areas ***/************
@@ -138,6 +149,14 @@ gText textAreaEMSAltKey6;
 gText textAreaEMSAltValue6;
 gText textAreaEMSAltLabel6;
 
+//******** EMS Backup Battery Section *******
+gText textBatVoltLabel;
+gText textBatVoltValue;
+gText textBatTempValue;
+gText textBatStatus;
+
+
+
 
 int MidScreen = 0;    // alternative screen for EFIS (GPS data, etc)
 int RightScreen = 0;  // alternative screen for EMS (on the right side)
@@ -181,6 +200,7 @@ String Tracking = "000M";
 unsigned long TimeRefresh = 0;
 unsigned long FlightStartMarker = 0;
 unsigned long FlyingTime = 0;
+unsigned long FlyingTimePrevious = 0;
 String s_FlightTime = "";
 
 //**********************************  AH ************************************************************
@@ -205,7 +225,7 @@ byte TimeConfig = 0;              // Time UTC or Local UTC = 0, Local = 1
 int TimeConfig_MemOffset = 4;     // 
 byte TimeMaster = 1;
 int TimeMaster_MemOffset = 5; 
-unsigned long  TimeSendPeriod = 10000;
+unsigned long  TimeSendPeriod = 15000;
 unsigned long  TimeSendTimestamp = 0;
 unsigned long  TimeReceiveTimestamp = 0;
 
@@ -251,6 +271,8 @@ void setup() {
   //Alam LEDs
   pinMode(42, OUTPUT);
   pinMode(43, OUTPUT);
+  pinMode(8, OUTPUT);
+  pinMode(9, OUTPUT);
 
 
     //while (CAN_OK != CAN.begin(MCP_ANY, CAN_1000KBPS, MCP_8MHZ))              // init can bus : baudrate = 500k
@@ -272,6 +294,8 @@ void setup() {
   RedLightBlink(1);
   YellowLightBlink(1);
 
+  analogWrite(BacklightControlPin, 128);
+
   GLCD.Init();
    
     GLCD.ClearScreen();
@@ -281,7 +305,7 @@ void setup() {
     GLCD.CursorTo(9, 4);
     GLCD.print("Display System");
     GLCD.CursorTo(10, 6);
-    GLCD.print("2021-06-24");
+    GLCD.print("2023-05-07");
     delay(2000);
     GLCD.ClearScreen();
 
@@ -294,6 +318,38 @@ void setup() {
 }
 
 void loop() {
+
+  // check for LCD brightness adjustments
+   BacklightSensorReading = analogRead(BacklightSensorPin);
+   if (BacklightSensorReading < 100) {
+    BacklightBrightness = 0;
+   } else {
+    BacklightBrightness = (BacklightSensorReading - 100)/4;
+    
+   }
+
+   if (BacklightSensorReading > 900) {
+    //BacklightSensorReading = 1024;
+    BacklightBrightness = 255;
+   } 
+
+  // LED brigness need to be somewhat lower when LCD brightness is below half-full
+  // It also should never go down to Zero
+
+  if (BacklightBrightness < 192) {
+    LEDBrightness = BacklightBrightness / 4;
+  } else {
+    LEDBrightness = BacklightBrightness;
+  }
+  if (BacklightBrightness < 10) {
+    LEDBrightness = 2;
+  }
+
+
+   
+   analogWrite(BacklightControlPin, BacklightBrightness);
+  //analogWrite(BacklightControlPin, 10);
+  
   // send the time periodically if this unit is the time master
   if (millis() - TimeSendTimestamp > TimeSendPeriod and TimeMaster == 1) {
     SendTime();
@@ -325,7 +381,21 @@ void loop() {
     //Serial.println(DisplayScreen);
   }
 
+  // Airspeed=60; 
 
+  if (Airspeed > MinFlightSpeed and FlightStartMarker == 0) { //we reached flying speed and it is time to start the timer
+    FlightStartMarker = millis();
+  }
+
+  if (Airspeed > MinFlightSpeed and FlightStartMarker > 0) { //we are flying so keep track of the time
+    FlyingTime = FlyingTimePrevious + millis() - FlightStartMarker;
+  }
+
+  if (Airspeed <= MinFlightSpeed) { //we are flying so keep track of the time
+    FlyingTimePrevious = FlyingTime;
+    FlightStartMarker = 0;
+  }
+  
 
 switch (DisplayScreen) {
       case 1:   // EFIS
@@ -345,31 +415,31 @@ switch (DisplayScreen) {
 
 // Send current time if this unit is Master time keeper
 void SendTime() {
-  unsigned long UnixTime = 0;
   DateTime now = RTC.now();
   UnixTime = now.unixtime();
-  Serial.print("Sending System Time ");
-  Serial.println(UnixTime);
+//  Serial.print("Sending System Time ");
+//  Serial.println(UnixTime);
   buf[0] = UnixTime;
   buf[1] = UnixTime >> 8;
   buf[2] = UnixTime >> 16;
   buf[3] = UnixTime >> 24;
   CAN.sendMsgBuf(25, 0, 4, buf);
- //Serial.println(((unsigned long)buf[3] << 24) | ((unsigned long)buf[2] << 16) | ((unsigned long)buf[1] << 8) | (unsigned long)buf[0]);
-
-
+  
+ Serial.println(((unsigned long)buf[3] << 24) | ((unsigned long)buf[2] << 16) | ((unsigned long)buf[1] << 8) | (unsigned long)buf[0]);
 
 }
 
 void ReceiveTime() {
   TimeReceiveTimestamp = millis();
-  UnixTime = (buf[3] << 24) | (buf[2] << 16) | (buf[1] << 8) | buf[0];
+  UnixTime = ((unsigned long)buf[3] << 24) | ((unsigned long)buf[2] << 16) | ((unsigned long)buf[1] << 8) | (unsigned long)buf[0];
+  Serial.print("Received Unix Time ");
+  Serial.println(UnixTime);
   DateTime now = RTC.now();
-  if (abs(now.unixtime()- UnixTime) >10000) {
+  if (abs(now.unixtime()- UnixTime) > 30) {
     RTC.adjust(DateTime(UnixTime));
   }
   
-  // if thes is the first system time message, turn off TimeMaster flag and record it into the EEPROM
+  // if this is the first system time message, turn off TimeMaster flag and record it into the EEPROM
   if (TimeMaster == 1) {
     EEPROM.put(TimeMaster_MemOffset, 0);
     TimeMaster = 0;

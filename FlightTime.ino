@@ -33,7 +33,9 @@ void FlightTime() {
   
   textAreaUTCTime.print(s_UTC);
   
-  
+  /*
+   * moved to the main file
+   * 
   if (Airspeed > MinFlightSpeed and FlightStartMarker == 0) { //we reached flying speed and it is time to start the timer
     FlightStartMarker = millis();
   }
@@ -41,7 +43,7 @@ void FlightTime() {
   if (Airspeed > MinFlightSpeed and FlightStartMarker > 0) { //we are flying so keep track of the time
     FlyingTime = millis() - FlightStartMarker;
   }
-  
+  */
   textAreaFLTTime.ClearArea();
   textAreaFLTTime.print(Time_Millis2String(FlyingTime));
   

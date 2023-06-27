@@ -107,6 +107,13 @@ switch (canId) {
           RawPressure = (buf[1] << 8) | buf[0];
       }
       break;
+    case 46:    // Received QNH from another unit
+      {
+          QNH = (buf[1] << 8) | buf[0];
+          textAreaQNHvalue.Printf("%04d", QNH);
+          EEPROM.put(QNH_MemOffset, QNH);
+      }
+      break;
     case 72:
       {
         // HDG   Roll    Pitch   TurnRate  

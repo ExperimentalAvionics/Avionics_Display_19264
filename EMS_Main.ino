@@ -47,6 +47,8 @@ if (RightScreen != encCurrentValue % 2 and MenuItem == 0) {
   }
   if(RightScreen == 0) {
     RightScreenDefault();
+    textBatVoltLabel.print("BAT:     V   C");
+    Show_BAT();
   }
 }
 
@@ -72,7 +74,12 @@ switch (canId) {
           ReceiveTime();
       }
       break;
-
+    case 46:    // Received QNH from another unit. It can arrive when unit is in EMS mode
+      {
+          QNH = (buf[1] << 8) | buf[0];
+          EEPROM.put(QNH_MemOffset, QNH);
+      }
+      break;
     case 50:
       {
       //RPM, Fuel Flow and Fuel Pressure
@@ -173,15 +180,27 @@ switch (canId) {
       }
       break;
 
+    case 86:
+      {
+       //******* Backup Battery Voltage and Status
+          BAT_Volts = (buf[1] << 8) | buf[0];
+          BAT_Status  =  buf[2]; 
+          BAT_Temperature  = buf[3];
+          if (RightScreen == 0) {
+            Show_BAT();
+          }
+      }
+      break;
+
     case 112:
       {
-        Serial.print(" Data: ");
-        for(int i = 0; i<8; i++)    // print the data
-        {
-            Serial.print(buf[i]);
-            Serial.print("\t");
-         }
-         Serial.println("");
+ //       Serial.print(" Data: ");
+ //       for(int i = 0; i<8; i++)    // print the data
+ //       {
+ //           Serial.print(buf[i]);
+ //           Serial.print("\t");
+ //        }
+ //        Serial.println("");
       //******* Engine total time
             TT_RPM   = ((unsigned long)buf[3] << 24) | ((unsigned long)buf[2] << 16) | ((unsigned long)buf[1] << 8) | (unsigned long)buf[0];
             TT_Clock = ((unsigned long)buf[7] << 24) | ((unsigned long)buf[6] << 16) | ((unsigned long)buf[5] << 8) | (unsigned long)buf[4];

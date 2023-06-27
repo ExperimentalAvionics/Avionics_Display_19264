@@ -10,7 +10,7 @@ void Warning_lights() {
 
 // there are two led control variables Warning_Yellow and Warning_Red
 // each bit in the variable represents a parameter
-// so is any of the bits are "1" (the variable is > 0)the relevant light will come on
+// so is any of the bits is "1" (the variable is > 0)the relevant light will come on
 // as the parameters are getting tested the relevant bitwise operation will be performed on the control variables
 
 unsigned int Warning_Yellow = 0;
@@ -129,19 +129,23 @@ if (((OilTemperature < OilTemperatureLowYellow * 10 && OilTemperature > OilTempe
 }
 
 if (((OilTemperature < OilTemperatureLowRed * 10) or (OilTemperature > OilTemperatureHighRed * 10)) and RPM > 0) {   
-  Warning_Red = Warning_Red | OilTemperature_Bit; // set bit 0, leave other what they were
+  Warning_Red = Warning_Red | OilTemperature_Bit; // set bit 0, leave others as they were
 } else {
-  Warning_Red = Warning_Red & ~OilTemperature_Bit; // clear bit 0 leave other what they were
+  Warning_Red = Warning_Red & ~OilTemperature_Bit; // clear bit 0 leave others as they were
 }
 
+// testing lights
+//Warning_Red =1;
+//Warning_Yellow =1;
 
-if (Warning_Yellow> 0) {
+
+if (Warning_Yellow > 0) {
   YellowLightBlink(1);
 } else {
   YellowLightBlink(0);
 }
 
-if (Warning_Red> 0) {
+if (Warning_Red > 0) {
   RedLightBlink(1);
 } else {
   RedLightBlink(0);

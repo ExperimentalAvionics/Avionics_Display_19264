@@ -68,6 +68,17 @@ void EMS_Display() {
   
 //****************** End of EGT + CHT **************
 
+//****************** Backup Battery Box ****************
+  textBatVoltLabel.DefineArea(85, 53 , 14, 1 , newbasic3x5);
+  textBatVoltValue.DefineArea(104, 53 , 4, 1 , newbasic3x5);
+  textBatTempValue.DefineArea(128, 53 , 2, 1 , newbasic3x5);
+  textBatVoltLabel.print("BAT:     V   C");
+  textBatStatus.DefineArea(144, 53 , 12, 1 , newbasic3x5);
+ 
+
+//****************** End of Backup Battery Box ****************
+  
+
   //**************** Alternative Engine Data area *******************
   textAreaEMSAltKey1.DefineArea(90, 0 , 8, 1 , System5x7);
   textAreaEMSAltValue1.DefineArea(140, 0 , 5, 1 , System5x7);

@@ -141,6 +141,7 @@ switch (canId) {
     case 100:
       {
        // GS    ALT   Track-T   Track-M -- 2 bytes each
+          Tracking = "";
           GroundSpeed = (buf[1] << 8) | buf[0];
           GroundSpeed = GroundSpeed / 100;
           GPSaltitude  = (buf[3] << 8) | buf[2];
@@ -168,9 +169,9 @@ switch (canId) {
           }
 
           if (Tracking_TorM == "") {
-            Tracking = "---";
+            Tracking = "  ---";
           } else {
-            Tracking = Tracking + TrackingNumber + " " + Tracking_TorM;
+            Tracking =  Tracking_TorM + " " + Tracking + TrackingNumber;
           }
           
           if (MidScreen == 1) {
@@ -179,6 +180,30 @@ switch (canId) {
           
       }
       break;
+          case 101:
+      {
+          for (int sat_ix = 0; sat_ix <= 7; sat_ix++) {
+            Sat_SN[sat_ix] = buf[sat_ix];
+          }
+
+          if (MidScreen == 1) {
+              Show_GPS_SN_Graph(101);
+          }
+
+      }
+      break;
+          case 102:
+      {
+          for (int sat_ix = 0; sat_ix <= 7; sat_ix++) {
+            Sat_SN[sat_ix] = buf[sat_ix];
+          }
+
+          if (MidScreen == 1) {
+              Show_GPS_SN_Graph(102);
+          }
+      }
+      break;
+
 
     default: 
       // if nothing else matches, do the default

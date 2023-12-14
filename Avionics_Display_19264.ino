@@ -97,6 +97,8 @@ gText textAreaGPSaltvalue;
 gText textAreaGPSDATA;
 gText textAreaGPSTRK;
 gText textAreaGPSTRKvalue;
+gText textAreaGPSsats;
+gText textAreaGLONASSsats;
 
 gText textAreaTASDATA;
 gText textAreaOAT;
@@ -195,7 +197,8 @@ unsigned int GroundSpeed = 0;
 unsigned int GPSaltitude = 0;
 int TrackingTrue = 0;
 int TrackingMagnetic = 0;
-String Tracking = "000M";
+String Tracking = "M 000";
+byte Sat_SN[8];
 
 unsigned long TimeRefresh = 0;
 unsigned long FlightStartMarker = 0;
@@ -305,7 +308,7 @@ void setup() {
     GLCD.CursorTo(9, 4);
     GLCD.print("Display System");
     GLCD.CursorTo(10, 6);
-    GLCD.print("2023-05-07");
+    GLCD.print("2023-12-14");
     delay(2000);
     GLCD.ClearScreen();
 

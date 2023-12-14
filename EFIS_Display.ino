@@ -79,12 +79,15 @@ void EFIS_Display() {
 
   //**************** GPS area *******************
   textAreaGPSDATA.DefineArea(81, 1 , 8, 1 , newbasic3x5);
-  textAreaGS.DefineArea(69, 12, 3, 1 , System5x7);
-  textAreaGSvalue.DefineArea(94, 12, 3, 1 , System5x7);
-  textAreaGPSalt.DefineArea(69, 22, 4, 1 , System5x7);
-  textAreaGPSaltvalue.DefineArea(94, 22, 5, 1 , System5x7);
-  textAreaGPSTRK.DefineArea(69, 32, 4, 1 , System5x7);
+  textAreaGS.DefineArea(69, 12, 2, 1 , System5x7);
+  textAreaGSvalue.DefineArea(107, 12, 3, 1 , System5x7);
+  textAreaGPSalt.DefineArea(69, 22, 3, 1 , System5x7);
+  textAreaGPSaltvalue.DefineArea(89, 22, 6, 1 , System5x7);
+  textAreaGPSTRK.DefineArea(69, 32, 3, 1 , System5x7);
   textAreaGPSTRKvalue.DefineArea(94, 32, 5, 1 , System5x7);
+
+  textAreaGPSsats.DefineArea(68, 41 , 2, 1 , newbasic3x5);
+  textAreaGLONASSsats.DefineArea(100, 41 , 2, 1 , newbasic3x5);
 
 //  textAreaGS.print("GS:");
 

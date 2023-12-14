@@ -86,7 +86,7 @@ switch (canId) {
           RPM          = (buf[1] << 8) | buf[0];
           FuelPressure     = (buf[3] << 8) | buf[2];
           FuelFlow = (buf[5] << 8) | buf[4];
-          
+
           Show_RPM();
           Show_FuelFlow();
           Show_FuelPressure();

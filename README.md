@@ -10,6 +10,11 @@ Unzip libraries.zip to the "libraries" folder in your Arduino environment.
 
 ## Release Notes: ##
 
+### 2023-12-14 ###
+* Changed presentation of GPS information. Now all the number in the GPS screen are aligned to the right.
+* GPS altitude now has the thousands separator (comma) making it easier to read
+* Track is now prefixed with T or M (True or Magnetic)
+* Added number of satellites being received with the signal bar graph for the first (strongest) 14 satellites. Left number and the bar graph at the bottom of the GPS screen represents GCP constellation (USA) and the right number and bar graph represent GLONASS constellation (Russia)
 
 ### 2023-06-27 ###
 * Implemented backlight and LEDs brightness dimmer for night flying. The change is effective only with the Display PCB board ver 5 and above (blue or black). The brightness is voltage controlled via Arduino port A8 (DSUB pin 10). Photoresistor or a potentiometer can be used to supply the control voltage.

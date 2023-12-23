@@ -30,19 +30,40 @@ void Show_GPS() {
   textAreaGSvalue.ClearArea();
   textAreaGSvalue.print(s_GroundSpeed);   
 
-  if (tmp_GPSaltitude <10000) {
+  if (tmp_GPSaltitude < 10000) {
     s_GPSaltitude = s_GPSaltitude + " ";
   }
-  if (tmp_GPSaltitude <1000) {
-    s_GPSaltitude = s_GPSaltitude + "  " + tmp_GPSaltitude;
-  } else {
+
+  if (tmp_GPSaltitude < 1000) {
+    s_GPSaltitude = s_GPSaltitude + "  ";
+  }
+
+  if (tmp_GPSaltitude < 100) {
+    s_GPSaltitude = s_GPSaltitude + " ";
+  }
+
+  if (tmp_GPSaltitude < 10) {
+    s_GPSaltitude = s_GPSaltitude + " ";
+  }
+
+  if (tmp_GPSaltitude >= 1000) {
     s_GPSaltitude = s_GPSaltitude + int(tmp_GPSaltitude/1000) + ",";
     tmp_GPSaltitude = tmp_GPSaltitude - int(tmp_GPSaltitude/1000)*1000;
-    s_GPSaltitude = s_GPSaltitude + tmp_GPSaltitude;
+    
+    if (tmp_GPSaltitude <100) {
+        s_GPSaltitude = s_GPSaltitude + "0";
+    }
+  
+    if (tmp_GPSaltitude <10) {
+        s_GPSaltitude = s_GPSaltitude + "0";
+    }
   } 
+  
+  s_GPSaltitude = s_GPSaltitude + tmp_GPSaltitude;
 
   textAreaGPSaltvalue.ClearArea();
   textAreaGPSaltvalue.print(s_GPSaltitude);
+  
 
   textAreaGPSTRKvalue.ClearArea();
   textAreaGPSTRKvalue.print(Tracking);

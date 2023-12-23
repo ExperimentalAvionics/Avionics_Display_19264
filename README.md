@@ -10,6 +10,9 @@ Unzip libraries.zip to the "libraries" folder in your Arduino environment.
 
 ## Release Notes: ##
 
+### 2023-12-23 ###
+* Minor bug fixes for GPS display.
+
 ### 2023-12-14 ###
 * Changed presentation of GPS information. Now all the number in the GPS screen are aligned to the right.
 * GPS altitude now has the thousands separator (comma) making it easier to read
